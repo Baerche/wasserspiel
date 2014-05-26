@@ -17,9 +17,10 @@ minetest.register_craft({
 minetest.register_abm({
 	nodenames = {"wasserspiel:testding"},
 	interval = 3,
-	chance = 1,
-	action = function(pos, node, active_object_count, active_object_count_wider)
-		-- print (node.name, minetest.pos_to_string(pos), active_object_count, active_object_count_wider)
+	chance = 10,
+	action = function(pos, node)
+		-- print (node.name, minetest.pos_to_string(pos))
+		minetest.set_node(pos, {name="air"})
 	end,
 })
 
@@ -31,8 +32,8 @@ minetest.register_abm({
 	interval = 3,
 	--chance = 1,
 	chance = 20000,
-	action = function(pos, node, active_object_count, active_object_count_wider)
-		-- print (node.name, minetest.pos_to_string(pos), active_object_count, active_object_count_wider)
+	action = function(pos, node)
+		-- print (node.name, minetest.pos_to_string(pos))
 		r = 1
 		logs.air = logs.air + 1
 		for x = -r,r do
