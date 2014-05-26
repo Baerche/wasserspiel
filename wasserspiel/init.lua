@@ -3,6 +3,14 @@ io.stdout:setvbuf("no")
 minetest.register_node("wasserspiel:testding", {
 	tiles = {"tutorial_decowood.png"},
 	groups = {oddly_breakable_by_hand=3},
+	on_construct = function(pos)
+		pos.y = pos.y - 1
+		minetest.set_node(pos, {name="water_source"})
+	end,
+	on_destruct = function(pos)
+		pos.y = pos.y - 1
+		minetest.set_node(pos, {name="air"})
+	end,
 })
 
 minetest.register_craft({
@@ -16,8 +24,8 @@ minetest.register_craft({
 
 minetest.register_abm({
 	nodenames = {"wasserspiel:testding"},
-	interval = 3,
-	chance = 10,
+	interval = 1,
+	chance = 1,
 	action = function(pos, node)
 		-- print (node.name, minetest.pos_to_string(pos))
 		minetest.set_node(pos, {name="air"})
