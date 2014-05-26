@@ -13,6 +13,11 @@ D=$D0/$M
 rm $D -f
 ln -s $S/$M $D
 
+M=wasserspiel
+D=$D0/$M
+rm $D -f
+ln -s $S/$M $D
+
 ls -l $D0
 
 
