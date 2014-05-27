@@ -1,11 +1,15 @@
 io.stdout:setvbuf("no") 
 
 minetest.register_node("wasserspiel:testding", {
-	tiles = {"tutorial_decowood.png"},
+	tiles = {"default_cloud.png"},
+ 	light_source = 15,
 	groups = {oddly_breakable_by_hand=3},
 	on_construct = function(pos)
 		pos.y = pos.y - 1
 		minetest.set_node(pos, {name="water_source"})
+		minetest.sound_play("default_break_glass", {
+			pos = pos,
+		})
 	end,
 	on_destruct = function(pos)
 		pos.y = pos.y - 1
