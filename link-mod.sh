@@ -18,6 +18,11 @@ D=$D0/$M
 rm $D -f
 ln -s $S/versionen/$M $D
 
+M=wasserspiel_003_locals
+D=$D0/$M
+rm $D -f
+ln -s $S/versionen/$M $D
+
 M=wasserspiel_dev
 D=$D0/$M
 rm $D -f

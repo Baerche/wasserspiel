@@ -1,17 +1,8 @@
-local debug = true
+local debug = false
 if debug then io.stdout:setvbuf("no") end
-local logs = {
-	air = 0,
-	air1 = 0,
-	air2 = 0,
-	air3 = 0,
-	m = m,
-	t = {},
-}
 
-
-local mn = minetest.get_current_modname()
-local m = mn .. ":"
+local m = minetest.get_current_modname() .. ":"
+minetest.register_alias("wasserspiel:testding", m .. "testding")
 
 minetest.register_node(m .. "testding", {
 	tiles = {"default_cloud.png"},
@@ -35,7 +26,6 @@ minetest.register_abm({
 	interval = 3,
 	chance = 3,
 	action = function(pos, node)
-		logs.air3 = logs.air3 + 1
 		minetest.set_node(pos, {name="air"})
 	end,
 })
@@ -64,59 +54,38 @@ minetest.register_abm({
 				end
 			end
 		end
-		-- if nicht returned then nur air
+		-- nicht returned, nur air
 		logs.air2 = logs.air2 + 1
 		minetest.set_node(pos, {name=m .. "testding"})
 	end,
 })
 
-local function assign_pos(p,q)
+function assign_pos(p,q)
 	p.x = q.x
 	p.y = q.y
 	p.z = q.z
 end
 
-function alias_alte_versionen()
-	local versionen = {
-		"wasserspiel",
-		"wasserspiel_dev",
-		"wasserspiel_003_locals",
-	}
-	for i,v in ipairs(versionen) do
-		if v ~= mn then
-			minetest.register_alias(v .. ":testding", m .. "testding")
-		end
-	end
-end
+logs = {
+	n = 0,
+	air = 0,
+	air1 = 0,
+	air2 = 0,
+	m = m
+}
 
-local function step()
-	logs.tm = minetest.get_timeofday()
+function step()
+	-- print ("boop", minetest.get_timeofday())
+	logs.n = logs.n + 1
+	logs.t = minetest.get_timeofday()
 	
-	if debug then
-		logs.t = {}
-		
-
-		
-	
-		local s = minetest.serialize(logs)
-		print (s)
-		minetest.chat_send_player("debugger", s)
-	end
+	if debug then print (minetest.serialize(logs)) end
 	
 	logs.air = 0
 	logs.air1 = 0
 	logs.air2 = 0
-	logs.air3 = 0
 	minetest.after(3, step)
 end
 
-alias_alte_versionen()
-
-logs.t0 = {}
-
-logs.t0 = logs.t
-
-minetest.after(1, step)
-
-
+step()
 

@@ -1,7 +1,3 @@
-menu:
-	pkill minetest || true
-	minetest
-
 run:
 	cat makefile
 	pkill minetest || true
@@ -9,3 +5,8 @@ run:
 	minetest --go
 	#cat ~/.minetest/minetest.conf
 	
+	menu:
+	pkill minetest || true
+	minetest
+
+
