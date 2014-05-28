@@ -5,6 +5,8 @@ local logs = {
 	air1 = 0,
 	air2 = 0,
 	air3 = 0,
+	flow = 0,
+	source = 0,
 	m = m,
 	t = {},
 }
@@ -20,9 +22,7 @@ minetest.register_node(m .. "testding", {
 	on_construct = function(pos)
 		pos.y = pos.y - 1
 		minetest.set_node(pos, {name="water_source"})
-		minetest.sound_play("default_break_glass", {
-			pos = pos,
-		})
+		minetest.sound_play("default_break_glass", {pos = pos})
 	end,
 	on_destruct = function(pos)
 		pos.y = pos.y - 1
@@ -70,6 +70,26 @@ minetest.register_abm({
 	end,
 })
 
+minetest.register_abm({
+	nodenames = {"default:water_flowing"},
+	interval = 3,
+	chance = 3000,
+	action = function(pos, node)
+		logs.flow = logs.flow + 1
+		minetest.set_node(pos, {name="air"})
+	end,
+})
+
+minetest.register_abm({
+	nodenames = {"default:water_source"},
+	interval = 3,
+	chance = 3000,
+	action = function(pos, node)
+		logs.source = logs.source + 1
+		minetest.set_node(pos, {name="air"})
+	end,
+})
+
 local function assign_pos(p,q)
 	p.x = q.x
 	p.y = q.y
@@ -100,19 +120,27 @@ local function step()
 	
 		local s = minetest.serialize(logs)
 		print (s)
-		minetest.chat_send_player("debugger", s)
+		
+		--minetest.chat_send_player("debugger", s)
+		
 	end
 	
 	logs.air = 0
 	logs.air1 = 0
 	logs.air2 = 0
 	logs.air3 = 0
+	logs.flow = 0
+	logs.source = 0
 	minetest.after(3, step)
 end
 
 alias_alte_versionen()
 
-logs.t0 = {}
+if false then
+	for k,v in pairs(minetest) do
+		table.insert(logs.t, k)
+	end
+end
 
 logs.t0 = logs.t
 
