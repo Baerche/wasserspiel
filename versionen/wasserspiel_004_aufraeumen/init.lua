@@ -1,4 +1,4 @@
-local debug = true
+local debug = false
 if debug then io.stdout:setvbuf("no") end
 local logs = {
 	air = 0,
@@ -101,7 +101,6 @@ function alias_alte_versionen()
 		"wasserspiel",
 		"wasserspiel_dev",
 		"wasserspiel_003_locals",
-		"wasserspiel_004_aufraeumen",
 	}
 	for i,v in ipairs(versionen) do
 		if v ~= mn then
