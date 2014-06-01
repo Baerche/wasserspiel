@@ -5,7 +5,7 @@ run:
 	minetest --go
 	#cat ~/.minetest/minetest.conf
 	
-	menu:
+menu:
 	pkill minetest || true
 	minetest
 

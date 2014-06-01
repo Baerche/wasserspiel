@@ -14,9 +14,12 @@ local logs = {
 	m = m, t0 = {}, t = {},
 }
 
-
 local mn = minetest.get_current_modname()
 local m = mn .. ":"
+
+local regen = 1
+local p = {} -- temporary pos
+
 
 minetest.register_node(m .. "testding", {
 	tiles = {"default_cloud.png"},
@@ -38,19 +41,18 @@ minetest.register_abm({
 	nodenames = {m .. "testding"},
 	interval = 3,
 	chance = 3,
-	action = function(pos, node)
+	action = function (pos, node)
 		logs.air3 = logs.air3 + 1
 		minetest.set_node(pos, {name="air"})
 	end,
 })
-
-local p = {}
 
 minetest.register_abm({
 	nodenames = {"air"},
 	interval = 3,
 	chance = 20000,
 	action = function(pos, node)
+		if regen < 1 or math.random(regen) > 1 then return end
 		local r = 1
 		logs.air = logs.air + 1
 		for x = -r,r do
@@ -107,6 +109,19 @@ function alias_alte_versionen()
 		end
 	end
 end
+
+minetest.register_chatcommand("rain", {
+		func = function(name, param)
+			logs.t0 = {}
+			if param == "" then
+				logs.t0 = "Regen: " .. regen
+			else
+				logs.t0 = "Regen von " .. regen .. " auf " .. param
+				regen = tonumber(param)
+			end
+			minetest.chat_send_player(name, dump(logs.t0))
+		end
+})
 
 local function step()
 	logs.tm = minetest.get_timeofday()
