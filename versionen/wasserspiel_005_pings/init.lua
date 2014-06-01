@@ -1,17 +1,14 @@
 local debug = true
 if debug then io.stdout:setvbuf("no") end
-
-local versionen = {
-	"wasserspiel",
-	"wasserspiel_dev",
-	"wasserspiel_003_locals",
-	"wasserspiel_004_aufraeumen",
-	"wasserspiel_005_pings",
-}
-
 local logs = {
-	air = 0, air1 = 0, air2 = 0, air3 = 0, flow = 0, source = 0,
-	m = m, t0 = {}, t = {},
+	air = 0,
+	air1 = 0,
+	air2 = 0,
+	air3 = 0,
+	flow = 0,
+	source = 0,
+	m = m,
+	t = {},
 }
 
 
@@ -101,6 +98,12 @@ local function assign_pos(p,q)
 end
 
 function alias_alte_versionen()
+	local versionen = {
+		"wasserspiel",
+		"wasserspiel_dev",
+		"wasserspiel_003_locals",
+		"wasserspiel_004_aufraeumen",
+	}
 	for i,v in ipairs(versionen) do
 		if v ~= mn then
 			minetest.register_alias(v .. ":testding", m .. "testding")
@@ -112,6 +115,7 @@ local function step()
 	logs.tm = minetest.get_timeofday()
 	
 	if debug then
+		logs.t = {}
 		
 
 		
