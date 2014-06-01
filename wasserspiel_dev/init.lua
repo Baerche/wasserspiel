@@ -20,6 +20,27 @@ local m = mn .. ":"
 local regen = 1
 local p = {} -- temporary pos
 
+config_file = minetest.get_worldpath() .. "/wasserspiel.txt"
+logs.t0 = config_file
+
+local function save()
+	s = minetest.serialize {regen = regen}
+	local f,e = io.open(config_file,"w")
+	if not f then return print(e) end
+	f:write(s)
+	f:close()		
+end
+
+local function load()
+    local f = io.open(config_file, "r")
+    if f then
+		local t = minetest.deserialize (f:read("*all"))
+		f:close()
+		regen = t.regen
+	end
+end
+
+load()
 
 minetest.register_node(m .. "testding", {
 	tiles = {"default_cloud.png"},
@@ -118,6 +139,7 @@ minetest.register_chatcommand("rain", {
 			else
 				logs.t0 = "Regen von " .. regen .. " auf " .. param
 				regen = tonumber(param)
+				save()
 			end
 			minetest.chat_send_player(name, dump(logs.t0))
 		end
@@ -154,8 +176,6 @@ if false then
 		table.insert(logs.t, k)
 	end
 end
-
-logs.t0 = logs.t
 
 minetest.after(1, step)
 
