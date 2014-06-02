@@ -33,6 +33,11 @@ D=$D0/$M
 rm $D -f
 ln -s $S/versionen/$M $D
 
+M=wasserspiel_006_regler
+D=$D0/$M
+rm $D -f
+ln -s $S/versionen/$M $D
+
 M=wasserspiel_dev
 D=$D0/$M
 rm $D -f
