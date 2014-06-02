@@ -4,7 +4,6 @@ if debug then io.stdout:setvbuf("no") end
 local versionen = {
 	"wasserspiel",
 	"wasserspiel_dev",
-	"wasserspiel_007_niedrig",
 }
 
 local logs = {
