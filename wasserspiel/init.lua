@@ -1,5 +1,5 @@
 local debug = false
-local debug = true
+-- local debug = true
 
 if debug then io.stdout:setvbuf("no") end
 
@@ -16,14 +16,17 @@ local logs = {
 
 local mn = minetest.get_current_modname()
 local m = mn .. ":"
+logs.mn = mn
 
 local regen = 1
 local hoehe = 1
+liqfin = minetest.setting_get("liquid_finite")
+logs.liqfin = liqfin
+
 local p = {} -- temporary pos
 
 local config_file = minetest.get_worldpath() .. "/wasserspiel.txt"
 logs.wld = string.gmatch(minetest.get_worldpath(),".*/(.*)")()
-logs.liqfin = minetest.setting_get("liquid_finite")
 
 local function save()
 	s = minetest.serialize {regen = regen, hoehe = hoehe}
@@ -66,8 +69,8 @@ minetest.register_node(m .. "cloudlet", {
 
 minetest.register_abm({
 	nodenames = {m .. "cloudlet"},
-	interval = 3,
-	chance = 3,
+	interval = liqfin and 1 or 3,
+	chance = liqfin and 1 or 3,
 	action = function (pos, node)
 		logs.air3 = logs.air3 + 1
 		minetest.set_node(pos, {name="air"})

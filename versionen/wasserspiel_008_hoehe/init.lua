@@ -4,6 +4,7 @@ if debug then io.stdout:setvbuf("no") end
 local versionen = {
 	"wasserspiel",
 	"wasserspiel_dev",
+	"wasserspiel_007_niedrig",
 }
 
 local logs = {
@@ -15,6 +16,7 @@ local mn = minetest.get_current_modname()
 local m = mn .. ":"
 
 local regen = 1
+local hoehe = 1
 local p = {} -- temporary pos
 
 local config_file = minetest.get_worldpath() .. "/wasserspiel.txt"
@@ -22,7 +24,7 @@ local wn = string.gmatch(minetest.get_worldpath(),".*/(.*)")()
 logs.t0 = wn
 
 local function save()
-	s = minetest.serialize {regen = regen}
+	s = minetest.serialize {regen = regen, hoehe = hoehe}
 	local f,e = io.open(config_file,"w")
 	if not f then return print(e) end
 	f:write(s)
@@ -32,9 +34,10 @@ end
 local function load()
     local f = io.open(config_file, "r")
     if f then
-		local t = minetest.deserialize (f:read("*all"))
+		local t = minetest.deserialize (f:read("*all")) or {}
 		f:close()
-		regen = t.regen
+		regen = t.regen or regen
+		hoehe = t.hoehe or hoehe
 	end
 end
 
@@ -79,6 +82,10 @@ minetest.register_abm({
 		local r = 1
 		logs.air = logs.air + 1
 		pos.y = pos.y + 5
+		if hoehe > 1 then
+			pos.y = pos.y + math.random(hoehe - 1)
+		end
+		-- 20 ok
 		for x = -r,r do
 			p.x = pos.x + x
 			for y = -r-1,r do
@@ -138,10 +145,18 @@ minetest.register_chatcommand("rain", {
 		func = function(name, param)
 			logs.t0 = {}
 			if param == "" then
-				logs.t0 = "Regen: " .. regen
+				logs.t0 = "Regen: " .. regen .. ", Hoehe " .. hoehe
 			else
-				logs.t0 = "Regen von " .. regen .. " auf " .. param
-				regen = tonumber(param)
+				local r, h = string.match(param,"(%d*),?(%d*)")
+				logs.t0 = ""
+				if r ~= "" then
+					logs.t0 = "Regen von " .. regen .. " auf " .. r
+					regen = tonumber(r)
+				end
+				if h ~= "" then
+					logs.t0 = logs.t0 .. ", Hoehe von " .. hoehe .. " auf " .. h
+					hoehe = tonumber(h)
+				end
 				save()
 			end
 			minetest.chat_send_player(name, dump(logs.t0))

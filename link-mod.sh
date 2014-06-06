@@ -13,6 +13,11 @@ D=$D0/$M
 rm $D -f
 ln -s $PWD/$M $D
 
+M=wasserspiel
+D=$D0/$M
+rm $D -f
+ln -s $PWD/$M $D
+
 find $D0 -name "wasserspiel_???_*" -maxdepth 1 -exec echo rm -f {} \;
 find $D0 -name "wasserspiel_???_*" -maxdepth 1 -exec rm -f {} \;
 ls $D0
