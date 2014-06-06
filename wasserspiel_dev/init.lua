@@ -53,12 +53,12 @@ minetest.register_node(m .. "cloudlet", {
 	
 	groups = {oddly_breakable_by_hand=3},
 	on_construct = function(pos)
-		pos.y = pos.y - 1
+		pos.y = pos.y + 1
 		minetest.set_node(pos, {name="water_source"})
 		minetest.sound_play("default_glass_footstep", {pos = pos})
 	end,
 	on_destruct = function(pos)
-		pos.y = pos.y - 1
+		pos.y = pos.y + 1
 		minetest.set_node(pos, {name="air"})
 		minetest.sound_play("default_break_glass", {pos = pos})
 	end,
@@ -66,7 +66,7 @@ minetest.register_node(m .. "cloudlet", {
 
 minetest.register_abm({
 	nodenames = {m .. "cloudlet"},
-	interval = liqfin and 1 or 3,
+	interval = liqfin and 2 or 3,
 	chance = liqfin and 1 or 3,
 	action = function (pos, node)
 		logs.air3 = logs.air3 + 1
@@ -80,7 +80,7 @@ minetest.register_abm({
 minetest.register_abm({
 	nodenames = {"air"},
 	neighbors = {"group:crumbly", "group:cracky"},
-	interval = 3,
+	interval = 1,
 	chance = 100,
 	action = function(pos, node)
 		if regen < 1 or math.random(regen) > 1 then return end
