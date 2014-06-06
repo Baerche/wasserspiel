@@ -1,5 +1,5 @@
-local debug = false
-local debug = true
+local mn = minetest.get_current_modname()
+local debug = nil ~= string.match(mn,"_dev$")
 
 if debug then io.stdout:setvbuf("no") end
 
@@ -11,10 +11,9 @@ local versionen = {
 
 local logs = {
 	air = 0, air1 = 0, air2 = 0, air3 = 0, flow = 0, source = 0,
-	t0 = {}, t = {},
+	t0 = {}, t = {}, debug = debug, mn = mn
 }
 
-local mn = minetest.get_current_modname()
 local m = mn .. ":"
 
 local regen = 1
@@ -22,8 +21,9 @@ local hoehe = 1
 local p = {} -- temporary pos
 
 local config_file = minetest.get_worldpath() .. "/wasserspiel.txt"
-logs.wld = string.gmatch(minetest.get_worldpath(),".*/(.*)")()
-logs.liqfin = minetest.setting_get("liquid_finite")
+logs.wld = string.match(minetest.get_worldpath(),".*/(.*)")
+local liqfin = minetest.setting_getbool("liquid_finite")
+logs.liqfin = liqfin
 
 local function save()
 	s = minetest.serialize {regen = regen, hoehe = hoehe}
@@ -66,8 +66,8 @@ minetest.register_node(m .. "cloudlet", {
 
 minetest.register_abm({
 	nodenames = {m .. "cloudlet"},
-	interval = 3,
-	chance = 3,
+	interval = liqfin and 1 or 3,
+	chance = liqfin and 1 or 3,
 	action = function (pos, node)
 		logs.air3 = logs.air3 + 1
 		minetest.set_node(pos, {name="air"})
@@ -112,28 +112,6 @@ minetest.register_abm({
 	end,
 })
 
-minetest.register_abm({
-	nodenames = {"default:water_flowing"},
-	neighbors = {"air"},
-	interval = 3,
-	chance = 3000,
-	action = function(pos, node)
-		logs.flow = logs.flow + 1
-		minetest.set_node(pos, {name="air"})
-	end,
-})
-
-minetest.register_abm({
-	nodenames = {"default:water_source"},
-	neighbors = {"air"},
-	interval = 3,
-	chance = 3000,
-	action = function(pos, node)
-		logs.source = logs.source + 1
-		minetest.set_node(pos, {name="air"})
-	end,
-})
-
 local function assign_pos(p,q)
 	p.x = q.x
 	p.y = q.y
@@ -170,6 +148,12 @@ minetest.register_chatcommand("rain", {
 		end
 })
 
+minetest.register_chatcommand("ws?", {
+		func = function(name, param)
+			minetest.chat_send_player(name, dump(logs))
+		end
+})
+
 local function step()
 	logs.tm = minetest.get_timeofday()
 	
@@ -195,12 +179,6 @@ local function step()
 end
 
 alias_alte_versionen()
-
-if false then
-	for k,v in pairs(minetest) do
-		table.insert(logs.t, k)
-	end
-end
 
 minetest.after(1, step)
 
