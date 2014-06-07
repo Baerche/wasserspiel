@@ -10,9 +10,24 @@ local versionen = {
 }
 
 local logs = {
-	air = 0, air1 = 0, air2 = 0, air3 = 0, flow = 0, source = 0,
-	t0 = {}, t = {}, debug = debug, mn = mn
+	t0 = {}, debug = debug, mn = mn
 }
+
+local function clear_logs()
+	logs.t = {}
+	
+	logs.air = 0
+	logs.air1 = 0
+	logs.air2 = 0
+	logs.air3 = 0
+	logs.flow = 0
+	logs.source = 0
+	
+	logs.am_wasser = 0
+	logs.verschoben = 0
+end
+
+clear_logs()
 
 local m = mn .. ":"
 
@@ -112,11 +127,30 @@ minetest.register_abm({
 	end,
 })
 
-local function assign_pos(p,q)
-	p.x = q.x
-	p.y = q.y
-	p.z = q.z
-end
+minetest.register_abm({
+	nodenames =  {"group:crumbly"},
+	neighbors = {"default:water_flowing"},
+	interval = 1,
+	chance = 1000,
+	action = function(pos, node)
+		logs.am_wasser = logs.am_wasser + 1
+		p.x = pos.x + math.random(-1,1)
+		p.y = pos.y + math.random(-1,0)
+		p.z = pos.z + math.random(-1,1)
+		if "default:water_flowing" == minetest.get_node(p).name then
+			p.y = p.y + 1
+			local n = minetest.get_node(p).name
+			if "default:water_flowing" == n or "air" == n then
+				p.y = p.y - 1
+				logs.verschoben = logs.verschoben + 1
+				local o = minetest.get_node(p)
+				minetest.set_node(p, minetest.get_node(pos))
+				minetest.set_node(pos, o)
+				--minetest.set_node(pos, {name="air"})
+			end
+		end
+	end,
+})
 
 function alias_alte_versionen()
 	for i,v in ipairs(versionen) do
@@ -168,13 +202,7 @@ local function step()
 		--minetest.chat_send_player("debugger", s)
 		
 	end
-	
-	logs.air = 0
-	logs.air1 = 0
-	logs.air2 = 0
-	logs.air3 = 0
-	logs.flow = 0
-	logs.source = 0
+	clear_logs()
 	minetest.after(3, step)
 end
 
