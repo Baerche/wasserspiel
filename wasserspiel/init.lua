@@ -1,7 +1,7 @@
 local mn = minetest.get_current_modname()
-local debug = nil ~= string.match(mn,"_dev$")
+local dbg = nil ~= string.match(mn,"_dev$")
 
-if debug then io.stdout:setvbuf("no") end
+if dbg then io.stdout:setvbuf("no") end
 
 local versionen = {
 	"wasserspiel",
@@ -10,9 +10,24 @@ local versionen = {
 }
 
 local logs = {
-	air = 0, air1 = 0, air2 = 0, air3 = 0, flow = 0, source = 0,
-	t0 = {}, t = {}, debug = debug, mn = mn
+	t0 = {}, dbg = dbg, mn = mn
 }
+
+local function clear_logs()
+	logs.t = {}
+	
+	logs.air = 0
+	logs.air1 = 0
+	logs.air2 = 0
+	logs.air3 = 0
+	logs.flow = 0
+	logs.source = 0
+	
+	logs.am_wasser = 0
+	logs.verschoben = 0
+end
+
+clear_logs()
 
 local m = mn .. ":"
 
@@ -54,13 +69,13 @@ minetest.register_node(m .. "cloudlet", {
 	groups = {oddly_breakable_by_hand=3},
 	on_construct = function(pos)
 		pos.y = pos.y + 1
-		minetest.set_node(pos, {name="water_source"})
-		minetest.sound_play("default_glass_footstep", {pos = pos})
+		minetest.set_node(pos, {name="default:water_source"})
+		--minetest.sound_play("default_glass_footstep", {pos = pos})
 	end,
 	on_destruct = function(pos)
 		pos.y = pos.y + 1
 		minetest.set_node(pos, {name="air"})
-		minetest.sound_play("default_break_glass", {pos = pos})
+		--minetest.sound_play("default_break_glass", {pos = pos})
 	end,
 })
 
@@ -108,15 +123,38 @@ minetest.register_abm({
 		end
 		-- if nicht returned then nur air
 		logs.air2 = logs.air2 + 1
-		minetest.set_node(pos, {name=m .. "cloudlet"})
+		if liqfin then
+			minetest.set_node(pos, {name="default:water_source"})
+		else
+			minetest.set_node(pos, {name=m .. "cloudlet"})
+		end
 	end,
 })
 
-local function assign_pos(p,q)
-	p.x = q.x
-	p.y = q.y
-	p.z = q.z
-end
+minetest.register_abm({
+	nodenames =  {"group:crumbly"},
+	neighbors = {"default:water_flowing"},
+	interval = 1,
+	chance = 1000,
+	action = function(pos, node)
+		logs.am_wasser = logs.am_wasser + 1
+		p.x = pos.x + math.random(-1,1)
+		p.y = pos.y + math.random(-1,0)
+		p.z = pos.z + math.random(-1,1)
+		if "default:water_flowing" == minetest.get_node(p).name then
+			p.y = p.y + 1
+			local n = minetest.get_node(p).name
+			if "default:water_flowing" == n or "air" == n then
+				p.y = p.y - 1
+				logs.verschoben = logs.verschoben + 1
+				local o = minetest.get_node(p)
+				minetest.set_node(p, minetest.get_node(pos))
+				minetest.set_node(pos, o)
+				--minetest.set_node(pos, {name="air"})
+			end
+		end
+	end,
+})
 
 function alias_alte_versionen()
 	for i,v in ipairs(versionen) do
@@ -154,27 +192,66 @@ minetest.register_chatcommand("ws?", {
 		end
 })
 
+if not liqfin then
+	minetest.register_abm({
+		nodenames = {"default:water_source"},
+		neighbors = {"air"},
+		interval = 1,
+		chance = 1,
+		action = function(pos, node)
+			for x = -1,1 do
+				p.x = pos.x + x
+				for y = -1,1 do
+					p.y = pos.y + y
+					for z = -1,1 do
+						p.z = pos.z + z
+						local n = minetest.get_node(p).name
+						if n ~= "air" and n ~= "default:water_flowing" 
+						and x ~= 0 and y ~= 0 and z ~= 0 then
+							minetest.set_node(pos, {name="air"})
+							return
+						end
+					end
+				end
+			end
+		end,
+	})
+end
+
+minetest.register_on_joinplayer(function(player)
+	local n = player:get_player_name()
+	if dbg and n == "debugger" then
+		local iv = player:get_inventory()
+		for i,st in ipairs({}) do
+			if not iv:contains_item("main", st) then
+				iv:add_item("main", st)
+			end
+		end
+		minetest.after(1,function(name)
+			minetest.chat_send_all("Debugger debuggt")
+		end, n)
+		minetest.get_inventory( {type="player", name=n} )
+	end
+end)
+
+
 local function step()
 	logs.tm = minetest.get_timeofday()
 	
-	if debug then
+	if dbg then
 		
 
 		
 	
-		local s = dump(logs)
+		--local s = dump(logs)
+		local s = "t0: " .. dump(logs.t0)
+		
 		print (s)
 		
 		--minetest.chat_send_player("debugger", s)
 		
 	end
-	
-	logs.air = 0
-	logs.air1 = 0
-	logs.air2 = 0
-	logs.air3 = 0
-	logs.flow = 0
-	logs.source = 0
+	clear_logs()
 	minetest.after(3, step)
 end
 

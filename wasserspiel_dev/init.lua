@@ -1,7 +1,7 @@
 local mn = minetest.get_current_modname()
-local debug = nil ~= string.match(mn,"_dev$")
+local dbg = nil ~= string.match(mn,"_dev$")
 
-if debug then io.stdout:setvbuf("no") end
+if dbg then io.stdout:setvbuf("no") end
 
 local versionen = {
 	"wasserspiel",
@@ -10,7 +10,7 @@ local versionen = {
 }
 
 local logs = {
-	t0 = {}, debug = debug, mn = mn
+	t0 = {}, dbg = dbg, mn = mn
 }
 
 local function clear_logs()
@@ -69,13 +69,13 @@ minetest.register_node(m .. "cloudlet", {
 	groups = {oddly_breakable_by_hand=3},
 	on_construct = function(pos)
 		pos.y = pos.y + 1
-		minetest.set_node(pos, {name="water_source"})
-		minetest.sound_play("default_glass_footstep", {pos = pos})
+		minetest.set_node(pos, {name="default:water_source"})
+		--minetest.sound_play("default_glass_footstep", {pos = pos})
 	end,
 	on_destruct = function(pos)
 		pos.y = pos.y + 1
 		minetest.set_node(pos, {name="air"})
-		minetest.sound_play("default_break_glass", {pos = pos})
+		--minetest.sound_play("default_break_glass", {pos = pos})
 	end,
 })
 
@@ -123,7 +123,11 @@ minetest.register_abm({
 		end
 		-- if nicht returned then nur air
 		logs.air2 = logs.air2 + 1
-		minetest.set_node(pos, {name=m .. "cloudlet"})
+		if liqfin then
+			minetest.set_node(pos, {name="default:water_source"})
+		else
+			minetest.set_node(pos, {name=m .. "cloudlet"})
+		end
 	end,
 })
 
@@ -188,15 +192,60 @@ minetest.register_chatcommand("ws?", {
 		end
 })
 
+if not liqfin then
+	minetest.register_abm({
+		nodenames = {"default:water_source"},
+		neighbors = {"air"},
+		interval = 1,
+		chance = 1,
+		action = function(pos, node)
+			for x = -1,1 do
+				p.x = pos.x + x
+				for y = -1,1 do
+					p.y = pos.y + y
+					for z = -1,1 do
+						p.z = pos.z + z
+						local n = minetest.get_node(p).name
+						if n ~= "air" and n ~= "default:water_flowing" 
+						and x ~= 0 and y ~= 0 and z ~= 0 then
+							minetest.set_node(pos, {name="air"})
+							return
+						end
+					end
+				end
+			end
+		end,
+	})
+end
+
+minetest.register_on_joinplayer(function(player)
+	local n = player:get_player_name()
+	if dbg and n == "debugger" then
+		local iv = player:get_inventory()
+		for i,st in ipairs({}) do
+			if not iv:contains_item("main", st) then
+				iv:add_item("main", st)
+			end
+		end
+		minetest.after(1,function(name)
+			minetest.chat_send_all("Debugger debuggt")
+		end, n)
+		minetest.get_inventory( {type="player", name=n} )
+	end
+end)
+
+
 local function step()
 	logs.tm = minetest.get_timeofday()
 	
-	if debug then
+	if dbg then
 		
 
 		
 	
-		local s = dump(logs)
+		--local s = dump(logs)
+		local s = "t0: " .. dump(logs.t0)
+		
 		print (s)
 		
 		--minetest.chat_send_player("debugger", s)
