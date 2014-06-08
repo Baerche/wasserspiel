@@ -4,8 +4,9 @@ local dbg = nil ~= string.match(mn,"_dev$")
 if dbg then io.stdout:setvbuf("no") end
 
 local logs = {
-	dbg = dbg, mn = mn, t0 = {mn}
+	t0 = {}
 }
+local info = {dbg = dbg, mn = mn}
 
 if wasserspiel then
 
@@ -33,16 +34,6 @@ local versionen = {
 
 local function clear_logs()
 	logs.t = {}
-	
-	logs.air = 0
-	logs.air1 = 0
-	logs.air2 = 0
-	logs.air3 = 0
-	logs.flow = 0
-	logs.source = 0
-	
-	logs.am_wasser = 0
-	logs.verschoben = 0
 end
 
 clear_logs()
@@ -54,9 +45,9 @@ local hoehe = 1
 local p = {} -- temporary pos
 
 local config_file = minetest.get_worldpath() .. "/wasserspiel.txt"
-logs.wld = string.match(minetest.get_worldpath(),".*/(.*)")
+info.wld = string.match(minetest.get_worldpath(),".*/(.*)")
 local liqfin = minetest.setting_getbool("liquid_finite")
-logs.liqfin = liqfin
+info.liqfin = liqfin
 
 local function save()
 	s = minetest.serialize {regen = regen, hoehe = hoehe}
@@ -102,7 +93,6 @@ minetest.register_abm({
 	interval = liqfin and 2 or 3,
 	chance = liqfin and 1 or 3,
 	action = function (pos, node)
-		logs.air3 = logs.air3 + 1
 		minetest.set_node(pos, {name="air"})
 		-- doppelt hält besser?
 		-- seiteneffect pos.y-- von set-node ausnutzend
@@ -118,7 +108,6 @@ minetest.register_abm({
 	action = function(pos, node)
 		if regen < 1 or math.random(regen) > 1 then return end
 		local r = 1
-		logs.air = logs.air + 1
 		pos.y = pos.y + 5
 		if hoehe > 1 then
 			pos.y = pos.y + math.random(hoehe - 1)
@@ -134,13 +123,10 @@ minetest.register_abm({
 					if n ~= "air" then
 						return
 					end
-					-- print(n.name)
-					logs.air1 = logs.air1 + 1
 				end
 			end
 		end
 		-- if nicht returned then nur air
-		logs.air2 = logs.air2 + 1
 		if liqfin then
 			minetest.set_node(pos, {name="default:water_source"})
 		else
@@ -155,7 +141,6 @@ minetest.register_abm({
 	interval = 1,
 	chance = 1000,
 	action = function(pos, node)
-		logs.am_wasser = logs.am_wasser + 1
 		p.x = pos.x + math.random(-1,1)
 		p.y = pos.y + math.random(-1,0)
 		p.z = pos.z + math.random(-1,1)
@@ -164,7 +149,6 @@ minetest.register_abm({
 			local n = minetest.get_node(p).name
 			if "default:water_flowing" == n or "air" == n then
 				p.y = p.y - 1
-				logs.verschoben = logs.verschoben + 1
 				local o = minetest.get_node(p)
 				minetest.set_node(p, minetest.get_node(pos))
 				minetest.set_node(pos, o)
@@ -174,13 +158,32 @@ minetest.register_abm({
 	end,
 })
 
-function alias_alte_versionen()
-	for i,v in ipairs(versionen) do
-		if v ~= mn then
-			minetest.register_alias(v .. ":cloudlet", m .. "cloudlet")
-		end
-	end
+if not liqfin then
+	minetest.register_abm({
+		nodenames = {"default:water_source"},
+		neighbors = {"air"},
+		interval = 1,
+		chance = 1,
+		action = function(pos, node)
+			for x = -1,1 do
+				p.x = pos.x + x
+				for y = -1,1 do
+					p.y = pos.y + y
+					for z = -1,1 do
+						p.z = pos.z + z
+						local n = minetest.get_node(p).name
+						if n ~= "air" and n ~= "default:water_flowing" 
+						and (x ~= 0 or y ~= 0 or z ~= 0) then
+							return
+						end
+					end
+				end
+			end
+			minetest.set_node(pos, {name="air"})
+		end,
+	})
 end
+
 
 minetest.register_chatcommand("rain", {
 		func = function(name, param)
@@ -207,34 +210,11 @@ minetest.register_chatcommand("rain", {
 minetest.register_chatcommand("ws?", {
 		func = function(name, param)
 			minetest.chat_send_player(name, dump(logs))
+			minetest.chat_send_player(name, dump(info))
+			print(dump(logs))
+			print(dump(info))
 		end
 })
-
-if not liqfin then
-	minetest.register_abm({
-		nodenames = {"default:water_source"},
-		neighbors = {"air"},
-		interval = 1,
-		chance = 1,
-		action = function(pos, node)
-			for x = -1,1 do
-				p.x = pos.x + x
-				for y = -1,1 do
-					p.y = pos.y + y
-					for z = -1,1 do
-						p.z = pos.z + z
-						local n = minetest.get_node(p).name
-						if n ~= "air" and n ~= "default:water_flowing" 
-						and x ~= 0 and y ~= 0 and z ~= 0 then
-							return
-						end
-					end
-				end
-			end
-			minetest.set_node(pos, {name="air"})
-		end,
-	})
-end
 
 minetest.register_on_joinplayer(function(player)
 	local n = player:get_player_name()
@@ -254,15 +234,15 @@ end)
 
 
 local function step()
-	logs.tm = minetest.get_timeofday()
+	info.tm = minetest.get_timeofday()
 	
 	if dbg then
 		
 
 		
 	
-		--local s = dump(logs)
-		local s = "t0: " .. dump(logs.t0)
+		local s = dump(logs)
+		--local s = "t0: " .. dump(logs.t0)
 		
 		print (s)
 		
@@ -271,6 +251,14 @@ local function step()
 	end
 	clear_logs()
 	minetest.after(3, step)
+end
+
+function alias_alte_versionen()
+	for i,v in ipairs(versionen) do
+		if v ~= mn then
+			minetest.register_alias(v .. ":cloudlet", m .. "cloudlet")
+		end
+	end
 end
 
 alias_alte_versionen()
