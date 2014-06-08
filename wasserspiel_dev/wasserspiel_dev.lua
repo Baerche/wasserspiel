@@ -112,14 +112,15 @@ minetest.register_abm({
 })
 
 minetest.register_abm({
-	nodenames = {"air"},
-	neighbors = {"group:crumbly", "group:cracky"},
+	nodenames = {"group:crumbly", "group:cracky"},
+	neighbors = {"air"},
 	interval = 1,
 	chance = 100,
 	action = function(pos, node)
 		if regen < 1 or math.random(regen) > 1 then return end
+		if string.match(node.name, ":desert_") then return end
 		local r = 1
-		pos.y = pos.y + 5
+		pos.y = pos.y + 6
 		if hoehe > 1 then
 			pos.y = pos.y + math.random(hoehe - 1)
 		end

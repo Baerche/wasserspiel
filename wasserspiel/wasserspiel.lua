@@ -86,6 +86,17 @@ minetest.register_node(m .. "cloudlet", {
 		minetest.set_node(pos, {name="air"})
 		if not liqfin then minetest.sound_play("default_break_glass", {pos = pos, gain = 0.3}) end
 	end,
+	on_use = function(itemstack, player, ps)
+		if not debug then return end
+		logs.t0 = {
+			ps.type,
+			ps.under and minetest.get_node(ps.under).name,
+			ps.above and minetest.get_node(ps.above).name,
+			player:get_inventory():get_stack("main", 1):to_string(),
+		}
+		minetest.chat_send_player(player:get_player_name(), dump(logs.t0))
+		
+	end,
 })
 
 minetest.register_abm({
@@ -101,14 +112,15 @@ minetest.register_abm({
 })
 
 minetest.register_abm({
-	nodenames = {"air"},
-	neighbors = {"group:crumbly", "group:cracky"},
+	nodenames = {"group:crumbly", "group:cracky"},
+	neighbors = {"air"},
 	interval = 1,
 	chance = 100,
 	action = function(pos, node)
 		if regen < 1 or math.random(regen) > 1 then return end
+		if string.match(node.name, ":desert_") then return end
 		local r = 1
-		pos.y = pos.y + 5
+		pos.y = pos.y + 6
 		if hoehe > 1 then
 			pos.y = pos.y + math.random(hoehe - 1)
 		end
@@ -220,7 +232,7 @@ minetest.register_on_joinplayer(function(player)
 	local n = player:get_player_name()
 	if dbg and n == "debugger" then
 		local iv = player:get_inventory()
-		for i,st in ipairs({}) do
+		for i,st in ipairs({mn .. ":cloudlet", "default:pick_wood 2", "default:torch 4"}) do
 			if not iv:contains_item("main", st) then
 				iv:add_item("main", st)
 			end
