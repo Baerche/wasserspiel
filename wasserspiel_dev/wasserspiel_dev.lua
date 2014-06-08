@@ -157,14 +157,13 @@ minetest.register_abm({
 		p.y = pos.y + math.random(-1,0)
 		p.z = pos.z + math.random(-1,1)
 		if "default:water_flowing" == minetest.get_node(p).name then
-			p.y = p.y + 1
-			local n = minetest.get_node(p).name
-			if "default:water_flowing" == n or "air" == n then
-				p.y = p.y - 1
+			pos.y = pos.y + 1
+			local n = minetest.get_node(pos).name
+			if minetest.get_item_group(n, "group:flora") == 0 then
+				pos.y = pos.y - 1
 				local o = minetest.get_node(p)
 				minetest.set_node(p, minetest.get_node(pos))
 				minetest.set_node(pos, o)
-				--minetest.set_node(pos, {name="air"})
 			end
 		end
 	end,
