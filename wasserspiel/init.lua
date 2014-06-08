@@ -208,12 +208,12 @@ if not liqfin then
 						local n = minetest.get_node(p).name
 						if n ~= "air" and n ~= "default:water_flowing" 
 						and x ~= 0 and y ~= 0 and z ~= 0 then
-							minetest.set_node(pos, {name="air"})
 							return
 						end
 					end
 				end
 			end
+			minetest.set_node(pos, {name="air"})
 		end,
 	})
 end
