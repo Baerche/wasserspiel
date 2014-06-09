@@ -1,0 +1,3 @@
+licht normal 15, unter baum 12
+time 5000 3, 6000 11
+
