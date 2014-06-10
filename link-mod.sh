@@ -13,7 +13,7 @@ D=$D0/$M
 rm $D -f
 ln -s $PWD/$M $D
 
-M=wasserspiel
+M=wasserspiel_base
 D=$D0/$M
 rm $D -f
 ln -s $PWD/$M $D

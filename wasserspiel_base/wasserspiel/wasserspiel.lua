@@ -25,12 +25,7 @@ else
 
 wasserspiel = {mn = mn}
 
-local versionen = {
-	"wasserspiel",
-	"wasserspiel_dev",
-	"wasserspiel_009_noch_nicht_lichtempfindlich",
-	"wasserspiel_010_lichtempfindlich",
-}
+local versionen = wasserspiel_shared.compatible
 
 local function clear_logs()
 	logs.t = {}
@@ -41,7 +36,7 @@ clear_logs()
 
 local m = mn .. ":"
 
-local regen = 1
+local regen = -1 --auto
 local hoehe = 1
 local p = {} -- temporary pos
 
@@ -151,11 +146,13 @@ minetest.register_node(m .. "cloudlet", {
 		end
 		pos.y = pos.y + 1
 		minetest.set_node(pos, {name="default:water_source"})
+		pos.y = pos.y - 1
 		if not liqfin then minetest.sound_play("default_glass_footstep", {pos = pos, gain = 0.5}) end
 	end,
 	on_destruct = function(pos)
 		pos.y = pos.y + 1
 		minetest.set_node(pos, {name="air"})
+		pos.y = pos.y - 1
 		if not liqfin then minetest.sound_play("default_break_glass", {pos = pos, gain = 0.3}) end
 	end,
 	on_use = cloudlet_info,
@@ -167,14 +164,16 @@ minetest.register_abm({
 	chance = liqfin and 1 or 3,
 	action = function (pos, node)
 		minetest.set_node(pos, {name="air"})
-		-- doppelt hält besser?
-		-- seiteneffect pos.y-- von set-node ausnutzend
+		pos.y = pos.y + 1
 		minetest.set_node(pos, {name="air"})
+		pos.y = pos.y - 1
 	end,
 })
 
 function neues_cloudlet(pos, node)
-	if regen < 1 or math.random(regen) > 1 then return end
+	local oy = pos.y
+	-- -1 nun lichtregen flag, 1 ist immer an
+	if regen == 0 or regen > 1 and math.random(regen) > 1 then return end
 	if string.match(node.name, ":desert_") then return end
 	local r = 1
 	pos.y = pos.y + 6
@@ -182,11 +181,13 @@ function neues_cloudlet(pos, node)
 		pos.y = pos.y + math.random(hoehe - 1)
 	end
 	-- 20 ok
-	local l = licht_wert(pos, 16) -- 2 .. 17
-	pos.y = pos.y - 1
-	--l = l * l
-	local r = l <= 1 and 1 or math.random( 1,l )
-	if r > 1 then return end
+	if regen < 0 then
+		local l = licht_wert(pos, 16) -- 2 .. 17
+		pos.y = pos.y - 1
+		--l = l * l
+		local r = l <= 1 and 1 or math.random( 1,l )
+		if r > 1 then return end
+	end
 	for x = -r,r do
 		p.x = pos.x + x
 		for y = -r-1,r do
@@ -195,6 +196,7 @@ function neues_cloudlet(pos, node)
 				p.z = pos.z + z
 				local n = minetest.get_node(p).name
 				if n ~= "air" then
+					pos.y = oy
 					return
 				end
 			end
@@ -206,6 +208,7 @@ function neues_cloudlet(pos, node)
 	else
 		minetest.set_node(pos, {name=m .. "cloudlet"})
 	end
+	pos.y = oy
 end
 
 minetest.register_abm({
@@ -228,8 +231,8 @@ minetest.register_abm({
 		if "default:water_flowing" == minetest.get_node(p).name then
 			pos.y = pos.y + 1
 			local n = minetest.get_node(pos).name
+			pos.y = pos.y - 1
 			if minetest.get_item_group(n, "group:flora") == 0 then
-				pos.y = pos.y - 1
 				local o = minetest.get_node(p)
 				minetest.set_node(p, minetest.get_node(pos))
 				minetest.set_node(pos, o)
