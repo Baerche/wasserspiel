@@ -24,8 +24,12 @@ Settings in gamepanel
 ---------------------
 finite liquid changes behavior, cant change that per world
 
-* off and /rain 1 : you drown in the rain, but it helps climbing
+* off and /rain 1 : you drown in the rain, but it helps climbing.
+Also called cloudinvaders.
+
 * on and /rain 1 : you drown in the puddles, after a while. 
-* off and /rain -1 : booring
+
+* off and /rain -1 : booring.
+
 * on and /rain -1 : build irrigation channels. Make the desert green.
 
