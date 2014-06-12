@@ -25,7 +25,10 @@ else
 
 wasserspiel = {mn = mn}
 
-local versionen = wasserspiel_shared.compatible
+local versionen = wasserspiel_versions and wasserspiel_versions.names or {
+	"wasserspiel",
+	"wasserspiel_dev",
+}
 
 local function clear_logs()
 	logs.t = {}

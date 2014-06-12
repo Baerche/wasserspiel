@@ -1,8 +1,8 @@
-wasserspiel_shared = {
-	compatible = {
+wasserspiel_versions = {
+	names = {
 	"wasserspiel",
 	"wasserspiel_dev",
 	}
 }
 
---nächste 11
+--nächste version 011
