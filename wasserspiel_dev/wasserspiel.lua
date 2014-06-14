@@ -42,11 +42,12 @@ local hoehe = 1
 local p = {} -- temporary pos
 
 local config_file = minetest.get_worldpath() .. "/wasserspiel.txt"
+local saved_config = {}
 info.wld = string.match(minetest.get_worldpath(),".*/(.*)")
 local liqfin = minetest.setting_getbool("liquid_finite")
 info.liqfin = liqfin
 
-function dbgr(name,s)
+local function dbgr(name,s)
 	if dbg and name == "debugger" then
 		if s then minetest.chat_send_player(name,"dbgr>" .. s) end
 		return true
@@ -54,19 +55,23 @@ function dbgr(name,s)
 	return false
 end
 
-function log_inc(s)
+local function log_inc(s)
 	if logs.z[s] then logs.z[s] = logs.z[s] + 1 else logs.z[s] = 1 end 
 end
 
 local function save()
-	s = minetest.serialize {regen = regen, hoehe = hoehe, benutzte_versionen = versionen}
+	local t = saved_config
+	t.benutzte_versionen = versionen
+	t.regen = regen
+	t.hoehe = hoehe
+	s = minetest.serialize (t)
 	local f,e = io.open(config_file,"w")
 	if not f then return print(e) end
 	f:write(s)
 	f:close()		
 end
 
-function alias_alte_versionen()
+local function alias_alte_versionen()
 	for v,_ in pairs(versionen) do
 		if v ~= mn then
 			minetest.register_alias(v .. ":cloudlet", m .. "cloudlet")
@@ -78,36 +83,38 @@ local function load()
     local f = io.open(config_file, "r")
     if f then
 		local t = minetest.deserialize (f:read("*all")) or {}
+		saved_config = t
 		f:close()
 		regen = t.regen or regen
 		hoehe = t.hoehe or hoehe
 		if t.benutzte_versionen then
 			versionen = t.benutzte_versionen
-			alias_alte_versionen()
 		end
 		info.bv = versionen
 	end
+	versionen["wasserspiel"] = true --release-compat
 	if not versionen[mn] then
 		versionen[mn] = true
 		save()
 	end
+	alias_alte_versionen()
 end
 
 load()
 
-function licht_text(pos)
+local function licht_text(pos)
 	if not pos then return "nicht in welt" end
 	if string.match( minetest.get_node(pos).name,":water_") then return "wasser..." end
 	return minetest.get_node_light(pos) or "kein licht"
 end
 
-function licht_wert(pos, wenn_fehlt)
+local function licht_wert(pos, wenn_fehlt)
 	if not pos then return wenn_fehlt end
 	if string.match( minetest.get_node(pos).name,":water_") then return wenn_fehlt end
 	return minetest.get_node_light(pos) or wenn_fehlt
 end
 
-function wasserspiel_info(name, param)
+local function wasserspiel_info(name, param)
 	info.you = name
 	info.regen = regen
 	info.hoehe = hoehe
@@ -121,7 +128,7 @@ function wasserspiel_info(name, param)
 end
 minetest.register_chatcommand("ws?", {func = wasserspiel_info})
 
-function cloudlet_info(itemstack, player, ps)
+local function cloudlet_info(itemstack, player, ps)
 	if not debug then return end
 	minetest.chat_send_player(player:get_player_name(), "")
 	logs.t0 = nil
@@ -188,7 +195,7 @@ minetest.register_abm({
 	end,
 })
 
-function neues_cloudlet(pos, node)
+local function neues_cloudlet(pos, node)
 	local oy = pos.y
 	-- -1 nun lichtregen flag, 1 ist immer an
 	if regen == 0 or regen > 1 and math.random(regen) > 1 then return end
@@ -308,7 +315,7 @@ minetest.register_chatcommand("rain", {
 	end
 })
 
-function hello(player)
+local function hello(player)
 	local n = player:get_player_name()
 	minetest.after(1,function()
 		minetest.chat_send_all("Wasserspiel begruest " .. n)
