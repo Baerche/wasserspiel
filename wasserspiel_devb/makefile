@@ -1,0 +1,4 @@
+run:
+	#make -C ..
+	minetest
+	

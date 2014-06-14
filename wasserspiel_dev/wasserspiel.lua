@@ -25,9 +25,7 @@ else
 
 wasserspiel = {mn = mn}
 
-local versionen = wasserspiel_versions and wasserspiel_versions.names or {
-	"wasserspiel",
-	"wasserspiel_dev",
+local versionen = {
 }
 
 local function clear_logs()
@@ -61,11 +59,19 @@ function log_inc(s)
 end
 
 local function save()
-	s = minetest.serialize {regen = regen, hoehe = hoehe}
+	s = minetest.serialize {regen = regen, hoehe = hoehe, benutzte_versionen = versionen}
 	local f,e = io.open(config_file,"w")
 	if not f then return print(e) end
 	f:write(s)
 	f:close()		
+end
+
+function alias_alte_versionen()
+	for v,_ in pairs(versionen) do
+		if v ~= mn then
+			minetest.register_alias(v .. ":cloudlet", m .. "cloudlet")
+		end
+	end
 end
 
 local function load()
@@ -75,6 +81,15 @@ local function load()
 		f:close()
 		regen = t.regen or regen
 		hoehe = t.hoehe or hoehe
+		if t.benutzte_versionen then
+			versionen = t.benutzte_versionen
+			alias_alte_versionen()
+		end
+		info.bv = versionen
+	end
+	if not versionen[mn] then
+		versionen[mn] = true
+		save()
 	end
 end
 
@@ -338,7 +353,7 @@ local function step()
 
 		
 	
-		local s = dump(logs.z)
+		local s = dump(logs)
 		--local s = dump(logs)
 		--local s = "t0: " .. dump(logs.t0)
 		
@@ -350,16 +365,6 @@ local function step()
 	clear_logs()
 	minetest.after(3, step)
 end
-
-function alias_alte_versionen()
-	for i,v in ipairs(versionen) do
-		if v ~= mn then
-			minetest.register_alias(v .. ":cloudlet", m .. "cloudlet")
-		end
-	end
-end
-
-alias_alte_versionen()
 
 minetest.after(1, step)
 

@@ -4,5 +4,5 @@ IFS='
 '
 cd $(dirname $0)
 
-meld /home/baerchen/minebaerchen/wasserspiel_dev /home/baerchen/minebaerchen/wasserspiel_base/wasserspiel
+meld wasserspiel_dev wasserspiel_devb
 
