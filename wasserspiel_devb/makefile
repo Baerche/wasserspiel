@@ -1,4 +1,3 @@
 run:
-	#make -C ..
-	minetest
+	make -C ..
 	
