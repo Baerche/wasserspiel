@@ -9,7 +9,8 @@ W=wasserspiel
 pwd
 mkdir -p maps
 cd maps
-python ~/minetestmapper/minetestmapper.py -i ~/.minetest/worlds/$W -o $W.png --draworigin --drawscale
+python ~/minetestmapper/minetestmapper.py -i ~/.minetest/worlds/$W -o $W.png --draworigin --drawscale  --drawplayers
 # --drawplayers 
 echo done
-nautilus .
+#nautilus .
+eog -f $W.png

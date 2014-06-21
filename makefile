@@ -4,7 +4,7 @@ run:
 	
 	#minetest
 	
-	minetest --go
+	minetest --go --name debugger
 	
 	#minetest --gameid minetest --worldname "aa" --go
 	

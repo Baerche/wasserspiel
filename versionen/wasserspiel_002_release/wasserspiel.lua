@@ -59,13 +59,6 @@ local function log_inc(s)
 	if logs.z[s] then logs.z[s] = logs.z[s] + 1 else logs.z[s] = 1 end 
 end
 
-local function log_t0_to (player, t0)
-	logs.t0 = t0
-	local n = player:get_player_name()
-	print("@" .. n .. ": " .. t0)
-	minetest.chat_send_player(n, t0)
-end
-
 local function save()
 	local t = saved_config
 	t.benutzte_versionen = versionen
@@ -97,7 +90,7 @@ local function load()
 		if t.benutzte_versionen then
 			versionen = t.benutzte_versionen
 		end
-		-- info.bv = versionen
+		info.bv = versionen
 	end
 	versionen["wasserspiel"] = true --release-compat
 	if not versionen[mn] then
@@ -111,7 +104,7 @@ load()
 
 local function licht_text(pos)
 	if not pos then return "nicht in welt" end
-	if string.match( minetest.get_node(pos).name,":water_") then return "wasser-bug" end
+	if string.match( minetest.get_node(pos).name,":water_") then return "wasser..." end
 	return minetest.get_node_light(pos) or "kein licht"
 end
 
@@ -147,23 +140,22 @@ local function cloudlet_info(itemstack, player, ps)
 	else
 		l = "nix"
 	end
-	log_t0_to (player, table.concat ({
-		"TYPE: " .. ps.type,
-		"LIGHT: ", l,
-		"UNDER: " ..
+	logs.t0 = table.concat ({
+		ps.type,
+		"cloud: ", l,
+		"under: ",
 		licht_text(ps.under), 
 		ps.under and minetest.get_node(ps.under).name or "nix",
 		ps.under and ps.under.y or "nix",
-		"GROUPS: " .. dump(minetest.registered_nodes[minetest.get_node(ps.under).name].groups),
-		"ABOVE: " ..
+		"above: ",
 		licht_text(ps.above),
 		ps.above and minetest.get_node(ps.above).name or "nix",
 		ps.above and ps.above.y or "nix",
-		"NODE: " ..
-		(ps.above and dump(minetest.get_node(ps.above)) or "nix"),
-		"INV#1: " .. player:get_inventory():get_stack("main", 1):to_string(),
-	}, ", "))
-			
+		"node",
+		ps.above and dump(minetest.get_node(ps.above)) or "nix",
+		"inv1: " .. player:get_inventory():get_stack("main", 1):to_string(),
+	}, ", ")
+	minetest.chat_send_player(player:get_player_name(), logs.t0)
 end
 
 minetest.register_node(m .. "cloudlet", {
