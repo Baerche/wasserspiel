@@ -134,6 +134,23 @@ local function wasserspiel_info(name, param)
 end
 minetest.register_chatcommand("ws?", {func = wasserspiel_info})
 
+local function slide(player)
+	local pos = player:getpos()
+	p.x = pos.x + math.random(-1,1)
+	p.y = pos.y + math.random(-1,1)
+	p.z = pos.z + math.random(-1,1)
+	player:moveto(p,true)
+	--log_t0_to(player, dump({"moving",pos,p}))
+	if player:getpos() ~= p then
+		log_t0_to(player, "moved " .. minetest.get_node(player:getpos()).name)
+		minetest.sound_play("default_snow_footstep")
+		--minetest.sound_play("default_snow_footstep.3", {pos = pos, gain = 0.5})
+		--default_snow_footstep.3.ogg
+	else
+		log_t0_to(player, "blocked")
+	end
+end
+
 local function cloudlet_info(itemstack, player, ps)
 	if not debug then return end
 	minetest.chat_send_player(player:get_player_name(), "")
@@ -165,7 +182,7 @@ local function cloudlet_info(itemstack, player, ps)
 		"INV#1: " .. player:get_inventory():get_stack("main", 1):to_string(),
 		"@" .. minetest.get_node(player:getpos()).name
 	}, ", "))
-			
+	slide(player)
 end
 
 minetest.register_node(m .. "cloudlet", {
@@ -254,12 +271,7 @@ minetest.register_abm({
 	action = neues_cloudlet,
 })
 
-minetest.register_abm({
-	nodenames =  {"group:crumbly"},
-	neighbors = {"default:water_flowing"},
-	interval = 1,
-	chance = 1000,
-	action = function(pos, node)
+local function erosion (pos, node)
 		p.x = pos.x + math.random(-1,1)
 		p.y = pos.y + math.random(-1,0)
 		p.z = pos.z + math.random(-1,1)
@@ -273,7 +285,14 @@ minetest.register_abm({
 				minetest.set_node(pos, o)
 			end
 		end
-	end,
+	end
+	
+minetest.register_abm({
+	nodenames =  {"group:crumbly"},
+	neighbors = {"default:water_flowing"},
+	interval = 1,
+	chance = 1000,
+	action = erosion,
 })
 
 if not liqfin then
