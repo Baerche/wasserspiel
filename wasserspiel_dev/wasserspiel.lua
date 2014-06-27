@@ -137,7 +137,7 @@ minetest.register_chatcommand("ws?", {func = wasserspiel_info})
 local function rutschen(player)
 	local pos = player:getpos()
 	p.x = pos.x + math.random(-1,1)
-	p.y = pos.y + math.random(-1,1)
+	p.y = pos.y + math.random(-1,0)
 	p.z = pos.z + math.random(-1,1)
 	local dort = minetest.registered_nodes[minetest.get_node(p).name]
 	p.y = p.y + 1
@@ -146,11 +146,23 @@ local function rutschen(player)
 	if dort.walkable or above_dort.walkable then -- walkable: nicht dorthin, nur drauf
 		minetest.sound_play("default_gravel_footstep")
 	else
-		--log_t0_to(player, "blocked")
+		--player:setpos(p)
 		player:moveto(p,true)
 		minetest.sound_play("default_sand_footstep")
 	end
 end
+
+local function alle_rutschen()
+	for i,player in ipairs(minetest.get_connected_players()) do
+		if true -- math.random(5) == 1
+		and	minetest.get_node(player:getpos()).name == "default:water_flowing" then
+			rutschen(player)
+		end
+	end
+	minetest.after(1, alle_rutschen)
+end
+
+alle_rutschen()
 
 local function cloudlet_info(itemstack, player, ps)
 	if not debug then return end
@@ -185,7 +197,6 @@ local function cloudlet_info(itemstack, player, ps)
 		"UNDER_ALL: " .. (ps.under and dump(minetest.registered_nodes[minetest.get_node(ps.under).name]) or "nix"),
 		"WALKABLE: " .. (ps.under and dump(minetest.registered_nodes[minetest.get_node(ps.under).name].walkable) or "nix"),
 	}, ", "))
-	rutschen(player)
 end
 
 minetest.register_node(m .. "cloudlet", {
