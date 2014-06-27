@@ -38,7 +38,7 @@ clear_logs()
 local m = mn .. ":"
 
 local regen = -1 --auto
-local hoehe = 1
+local hoehe = 30
 local p = {} -- temporary pos
 
 local config_file = minetest.get_worldpath() .. "/wasserspiel.txt"
@@ -57,6 +57,13 @@ end
 
 local function log_inc(s)
 	if logs.z[s] then logs.z[s] = logs.z[s] + 1 else logs.z[s] = 1 end 
+end
+
+local function log_t0_to (player, t0)
+	logs.t0 = t0
+	local n = player:get_player_name()
+	print("@" .. n .. ": " .. t0)
+	minetest.chat_send_player(n, t0)
 end
 
 local function save()
@@ -90,7 +97,6 @@ local function load()
 		if t.benutzte_versionen then
 			versionen = t.benutzte_versionen
 		end
-		info.bv = versionen
 	end
 	versionen["wasserspiel"] = true --release-compat
 	if not versionen[mn] then
@@ -104,7 +110,7 @@ load()
 
 local function licht_text(pos)
 	if not pos then return "nicht in welt" end
-	if string.match( minetest.get_node(pos).name,":water_") then return "wasser..." end
+	if string.match( minetest.get_node(pos).name,":water_") then return "wasser-bug" end
 	return minetest.get_node_light(pos) or "kein licht"
 end
 
@@ -140,22 +146,26 @@ local function cloudlet_info(itemstack, player, ps)
 	else
 		l = "nix"
 	end
-	logs.t0 = table.concat ({
-		ps.type,
-		"cloud: ", l,
-		"under: ",
+	log_t0_to (player, table.concat ({
+		"TYPE: " .. ps.type,
+		"LIGHT: ", l,
+		"UNDER: " ..
 		licht_text(ps.under), 
 		ps.under and minetest.get_node(ps.under).name or "nix",
 		ps.under and ps.under.y or "nix",
-		"above: ",
+		"GROUPS: " .. (ps.under and
+			dump(minetest.registered_nodes[minetest.get_node(ps.under).name].groups)
+			or "nix"),
+		"ABOVE: " ..
 		licht_text(ps.above),
 		ps.above and minetest.get_node(ps.above).name or "nix",
 		ps.above and ps.above.y or "nix",
-		"node",
-		ps.above and dump(minetest.get_node(ps.above)) or "nix",
-		"inv1: " .. player:get_inventory():get_stack("main", 1):to_string(),
-	}, ", ")
-	minetest.chat_send_player(player:get_player_name(), logs.t0)
+		"NODE: " ..
+		(ps.above and dump(minetest.get_node(ps.above)) or "nix"),
+		"INV#1: " .. player:get_inventory():get_stack("main", 1):to_string(),
+		"@" .. minetest.get_node(player:getpos()).name
+	}, ", "))
+			
 end
 
 minetest.register_node(m .. "cloudlet", {
@@ -203,7 +213,7 @@ local function neues_cloudlet(pos, node)
 	local r = 1
 	pos.y = pos.y + 6
 	if hoehe > 1 then
-		pos.y = pos.y + math.random(hoehe - 1)
+		pos.y = pos.y + hoehe - 1
 	end
 	-- 20 ok
 	if regen < 0 then
@@ -292,14 +302,39 @@ if not liqfin then
 	})
 end
 
+if liqfin then
+	minetest.register_abm({
+		nodenames = {"default:water_flowing"},
+		neighbors = {"air"},
+		interval = 1,
+		chance = 5 ,
+		-- 5 day 5 * 15 night
+		action = function(pos, node)
+			logs.t0 = "verdunsten"
+			log_inc "verd.aufruf"
+			if hoehe == 1 or regen ~= -1 then return end
+			pos.y = pos.y + 1
+			local n = minetest.get_node(p).name
+			pos.y = pos.y - 1
+			if n == "air" then
+				pos.y = pos.y + 1
+				local l = 16 - licht_wert(pos,15)
+				pos.y = pos.y - 1
+				if l == 1 or math.random(1,l) == 1 then
+					log_inc "verdunstend"
+					minetest.set_node(pos, {name="air"})
+				end
+			end
+		end,
+	})
+end
 
-minetest.register_chatcommand("rain", {
-	func = function(name, param)
+local function regen_setzen(name, param)
 		logs.t0 = {}
 		if param == "" then
 			logs.t0 = "Regen: " .. regen .. ", Hoehe " .. hoehe
 		else
-			local r, h = string.match(param,"(%d*),?(%d*)")
+			local r, h = string.match(param,"(\-?%d*),?(%d*)")
 			logs.t0 = ""
 			if r ~= "" then
 				logs.t0 = "Regen von " .. regen .. " auf " .. r
@@ -313,6 +348,9 @@ minetest.register_chatcommand("rain", {
 		end
 		minetest.chat_send_player(name, dump(logs.t0))
 	end
+	
+minetest.register_chatcommand("rain", {
+	func = regen_setzen
 })
 
 local function hello(player)
