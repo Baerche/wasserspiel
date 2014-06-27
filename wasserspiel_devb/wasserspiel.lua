@@ -134,6 +134,36 @@ local function wasserspiel_info(name, param)
 end
 minetest.register_chatcommand("ws?", {func = wasserspiel_info})
 
+local function rutschen(player)
+	local pos = player:getpos()
+	p.x = pos.x + math.random(-1,1)
+	p.y = pos.y + math.random(-1,0)
+	p.z = pos.z + math.random(-1,1)
+	local dort = minetest.registered_nodes[minetest.get_node(p).name]
+	p.y = p.y + 1
+	local above_dort = minetest.registered_nodes[minetest.get_node(p).name]
+	p.y = p.y - 1
+	if dort.walkable or above_dort.walkable then -- walkable: nicht dorthin, nur drauf
+		minetest.sound_play("default_gravel_footstep")
+	else
+		player:setpos(p)
+		--player:moveto(p,true) --geht nicht beim laufen
+		minetest.sound_play("default_sand_footstep")
+	end
+end
+
+local function alle_rutschen()
+	for i,player in ipairs(minetest.get_connected_players()) do
+		if true -- math.random(5) == 1
+		and	minetest.get_node(player:getpos()).name == "default:water_flowing" then
+			rutschen(player)
+		end
+	end
+	minetest.after(1, alle_rutschen)
+end
+
+alle_rutschen()
+
 local function cloudlet_info(itemstack, player, ps)
 	if not debug then return end
 	minetest.chat_send_player(player:get_player_name(), "")
@@ -163,9 +193,10 @@ local function cloudlet_info(itemstack, player, ps)
 		"NODE: " ..
 		(ps.above and dump(minetest.get_node(ps.above)) or "nix"),
 		"INV#1: " .. player:get_inventory():get_stack("main", 1):to_string(),
-		"@" .. minetest.get_node(player:getpos()).name
+		"@" .. minetest.get_node(player:getpos()).name,
+		"UNDER_ALL: " .. (ps.under and dump(minetest.registered_nodes[minetest.get_node(ps.under).name]) or "nix"),
+		"WALKABLE: " .. (ps.under and dump(minetest.registered_nodes[minetest.get_node(ps.under).name].walkable) or "nix"),
 	}, ", "))
-			
 end
 
 minetest.register_node(m .. "cloudlet", {
@@ -247,19 +278,14 @@ local function neues_cloudlet(pos, node)
 end
 
 minetest.register_abm({
-	nodenames = {"group:crumbly", "group:cracky"},
+	nodenames = {"group:crumbly", "group:cracky", "group:snappy", "group:oddly_breakable_by_hand"},
 	neighbors = {"air"},
 	interval = 1,
 	chance = 100,
 	action = neues_cloudlet,
 })
 
-minetest.register_abm({
-	nodenames =  {"group:crumbly"},
-	neighbors = {"default:water_flowing"},
-	interval = 1,
-	chance = 1000,
-	action = function(pos, node)
+local function erosion (pos, node)
 		p.x = pos.x + math.random(-1,1)
 		p.y = pos.y + math.random(-1,0)
 		p.z = pos.z + math.random(-1,1)
@@ -273,7 +299,14 @@ minetest.register_abm({
 				minetest.set_node(pos, o)
 			end
 		end
-	end,
+	end
+	
+minetest.register_abm({
+	nodenames =  {"group:crumbly"},
+	neighbors = {"default:water_flowing"},
+	interval = 1,
+	chance = 1000,
+	action = erosion,
 })
 
 if not liqfin then

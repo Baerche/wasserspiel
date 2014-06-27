@@ -146,8 +146,8 @@ local function rutschen(player)
 	if dort.walkable or above_dort.walkable then -- walkable: nicht dorthin, nur drauf
 		minetest.sound_play("default_gravel_footstep")
 	else
-		--player:setpos(p)
-		player:moveto(p,true)
+		player:setpos(p)
+		--player:moveto(p,true) --geht nicht beim laufen
 		minetest.sound_play("default_sand_footstep")
 	end
 end
@@ -278,7 +278,7 @@ local function neues_cloudlet(pos, node)
 end
 
 minetest.register_abm({
-	nodenames = {"group:crumbly", "group:cracky"},
+	nodenames = {"group:crumbly", "group:cracky", "group:snappy", "group:oddly_breakable_by_hand"},
 	neighbors = {"air"},
 	interval = 1,
 	chance = 100,
