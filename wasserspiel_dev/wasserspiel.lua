@@ -134,20 +134,21 @@ local function wasserspiel_info(name, param)
 end
 minetest.register_chatcommand("ws?", {func = wasserspiel_info})
 
-local function slide(player)
+local function rutschen(player)
 	local pos = player:getpos()
 	p.x = pos.x + math.random(-1,1)
 	p.y = pos.y + math.random(-1,1)
 	p.z = pos.z + math.random(-1,1)
-	player:moveto(p,true)
-	--log_t0_to(player, dump({"moving",pos,p}))
-	if player:getpos() ~= p then
-		log_t0_to(player, "moved " .. minetest.get_node(player:getpos()).name)
-		minetest.sound_play("default_snow_footstep")
-		--minetest.sound_play("default_snow_footstep.3", {pos = pos, gain = 0.5})
-		--default_snow_footstep.3.ogg
+	local dort = minetest.registered_nodes[minetest.get_node(p).name]
+	p.y = p.y + 1
+	local above_dort = minetest.registered_nodes[minetest.get_node(p).name]
+	p.y = p.y - 1
+	if dort.walkable or above_dort.walkable then -- walkable: nicht dorthin, nur drauf
+		minetest.sound_play("default_gravel_footstep")
 	else
-		log_t0_to(player, "blocked")
+		--log_t0_to(player, "blocked")
+		player:moveto(p,true)
+		minetest.sound_play("default_sand_footstep")
 	end
 end
 
@@ -180,9 +181,11 @@ local function cloudlet_info(itemstack, player, ps)
 		"NODE: " ..
 		(ps.above and dump(minetest.get_node(ps.above)) or "nix"),
 		"INV#1: " .. player:get_inventory():get_stack("main", 1):to_string(),
-		"@" .. minetest.get_node(player:getpos()).name
+		"@" .. minetest.get_node(player:getpos()).name,
+		"UNDER_ALL: " .. (ps.under and dump(minetest.registered_nodes[minetest.get_node(ps.under).name]) or "nix"),
+		"WALKABLE: " .. (ps.under and dump(minetest.registered_nodes[minetest.get_node(ps.under).name].walkable) or "nix"),
 	}, ", "))
-	slide(player)
+	rutschen(player)
 end
 
 minetest.register_node(m .. "cloudlet", {
