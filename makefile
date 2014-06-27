@@ -2,9 +2,9 @@ run:
 	cat makefile
 	pkill minetest || true
 	
-	#minetest
+	minetest
 	
-	minetest --go --name debugger
+	#minetest --go --name debugger
 	
 	#minetest --gameid minetest --worldname "aa" --go
 	

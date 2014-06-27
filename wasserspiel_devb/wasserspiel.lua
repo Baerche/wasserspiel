@@ -285,6 +285,25 @@ minetest.register_abm({
 	action = neues_cloudlet,
 })
 
+local function tropfen(pos, node)
+	pos.y = pos.y - 1
+	if minetest.get_node(pos).name == "air" then
+		minetest.set_node(pos, {name="default:water_source"})
+		minetest.sound_play("default_glass_footstep", {pos = pos, gain = 0.5})
+	end
+	pos.y = pos.y + 1
+end
+
+if liqfin then
+	minetest.register_abm({
+		nodenames = {"default:stone"},
+		neighbors = {"air"},
+		interval = 1,
+		chance = 1000,
+		action = tropfen,
+	})
+end
+
 local function erosion (pos, node)
 		p.x = pos.x + math.random(-1,1)
 		p.y = pos.y + math.random(-1,0)
