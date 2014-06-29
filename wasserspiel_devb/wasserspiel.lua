@@ -305,20 +305,20 @@ if liqfin then
 end
 
 local function erosion (pos, node)
-		p.x = pos.x + math.random(-1,1)
-		p.y = pos.y + math.random(-1,0)
-		p.z = pos.z + math.random(-1,1)
-		if "default:water_flowing" == minetest.get_node(p).name then
-			pos.y = pos.y + 1
-			local n = minetest.get_node(pos).name
-			pos.y = pos.y - 1
-			if minetest.get_item_group(n, "group:flora") == 0 then
-				local o = minetest.get_node(p)
-				minetest.set_node(p, minetest.get_node(pos))
-				minetest.set_node(pos, o)
-			end
+	p.x = pos.x + math.random(-1,1)
+	p.y = pos.y + math.random(-1,0)
+	p.z = pos.z + math.random(-1,1)
+	if "default:water_flowing" == minetest.get_node(p).name then
+		pos.y = pos.y + 1
+		local n = minetest.get_node(pos).name
+		pos.y = pos.y - 1
+		if minetest.get_item_group(n, "group:flora") == 0 then
+			local o = minetest.get_node(p)
+			minetest.set_node(p, minetest.get_node(pos))
+			minetest.set_node(pos, o)
 		end
 	end
+end
 	
 minetest.register_abm({
 	nodenames =  {"group:crumbly"},
@@ -354,30 +354,28 @@ if not liqfin then
 	})
 end
 
+function verdunsten(pos, node)
+	if hoehe == 1 or regen ~= -1 then return end
+	pos.y = pos.y + 1
+	local n = minetest.get_node(p).name
+	pos.y = pos.y - 1
+	if n == "air" then
+		pos.y = pos.y + 1
+		local l = 16 - licht_wert(pos,15)
+		pos.y = pos.y - 1
+		if l == 1 or math.random(1,l) == 1 then
+			minetest.set_node(pos, {name="air"})
+		end
+	end
+end
+
 if liqfin then
 	minetest.register_abm({
 		nodenames = {"default:water_flowing"},
 		neighbors = {"air"},
-		interval = 1,
-		chance = 5 ,
-		-- 5 day 5 * 15 night
-		action = function(pos, node)
-			logs.t0 = "verdunsten"
-			log_inc "verd.aufruf"
-			if hoehe == 1 or regen ~= -1 then return end
-			pos.y = pos.y + 1
-			local n = minetest.get_node(p).name
-			pos.y = pos.y - 1
-			if n == "air" then
-				pos.y = pos.y + 1
-				local l = 16 - licht_wert(pos,15)
-				pos.y = pos.y - 1
-				if l == 1 or math.random(1,l) == 1 then
-					log_inc "verdunstend"
-					minetest.set_node(pos, {name="air"})
-				end
-			end
-		end,
+		interval = 5,
+		chance = 1 ,
+		action = verdunsten,
 	})
 end
 
