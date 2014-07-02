@@ -6,11 +6,15 @@ cd $(dirname $0)
 
 W=wasserspiel
 
+I=~/.minetest/worlds/$W.png
+M=/tmp/mapping
 pwd
 mkdir -p maps
 cd maps
-python ~/minetestmapper/minetestmapper.py -i ~/.minetest/worlds/$W -o $W.png --draworigin --drawscale  --drawplayers
+mkdir -p $M
+cp -a ~/.minetest/worlds/$W/* $M
+python ~/minetestmapper/minetestmapper.py -i $M -o $I --draworigin --drawscale  --drawplayers
 # --drawplayers 
 echo done
 #nautilus .
-eog -f $W.png
+eog -f ~/.minetest/worlds/$W.png &
