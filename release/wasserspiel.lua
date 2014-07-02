@@ -3,9 +3,20 @@ local dbg = nil ~= string.match(mn,"_dev$")
 if dbg then io.stdout:setvbuf("no") end
 
 local logs = {
-	t0 = {}
+	t0 = {}, full_log = {}
 }
 local info = {dbg = dbg, mn = mn}
+
+local function clear_logs()
+	logs.t = {}
+	logs.z = {}
+	logs.step_log = {}
+end
+
+clear_logs()
+
+
+
 
 if wasserspiel then
 
@@ -28,13 +39,6 @@ wasserspiel = {mn = mn}
 local versionen = {
 }
 
-local function clear_logs()
-	logs.t = {}
-	logs.z = {}
-end
-
-clear_logs()
-
 local m = mn .. ":"
 
 local regen = -1 --auto
@@ -53,6 +57,16 @@ local function dbgr(name,s)
 		return true
 	end
 	return false
+end
+
+local function slog(o)
+	print ('LS: ' .. dump(o))
+	table.insert(logs.step_log,o)
+end
+
+local function flog(o)
+	print ('LS: ' .. dump(o))
+	table.insert(logs.full_log,o)
 end
 
 local function log_inc(s)
@@ -305,20 +319,20 @@ if liqfin then
 end
 
 local function erosion (pos, node)
-		p.x = pos.x + math.random(-1,1)
-		p.y = pos.y + math.random(-1,0)
-		p.z = pos.z + math.random(-1,1)
-		if "default:water_flowing" == minetest.get_node(p).name then
-			pos.y = pos.y + 1
-			local n = minetest.get_node(pos).name
-			pos.y = pos.y - 1
-			if minetest.get_item_group(n, "group:flora") == 0 then
-				local o = minetest.get_node(p)
-				minetest.set_node(p, minetest.get_node(pos))
-				minetest.set_node(pos, o)
-			end
+	p.x = pos.x + math.random(-1,1)
+	p.y = pos.y + math.random(-1,0)
+	p.z = pos.z + math.random(-1,1)
+	if "default:water_flowing" == minetest.get_node(p).name then
+		pos.y = pos.y + 1
+		local n = minetest.get_node(pos).name
+		pos.y = pos.y - 1
+		if minetest.get_item_group(n, "group:flora") == 0 then
+			local o = minetest.get_node(p)
+			minetest.set_node(p, minetest.get_node(pos))
+			minetest.set_node(pos, o)
 		end
 	end
+end
 	
 minetest.register_abm({
 	nodenames =  {"group:crumbly"},
@@ -354,30 +368,28 @@ if not liqfin then
 	})
 end
 
+function verdunsten(pos, node)
+	if hoehe == 1 or regen ~= -1 then return end
+	pos.y = pos.y + 1
+	local n = minetest.get_node(p).name
+	pos.y = pos.y - 1
+	if n == "air" then
+		pos.y = pos.y + 1
+		local l = 16 - licht_wert(pos,15)
+		pos.y = pos.y - 1
+		if l == 1 or math.random(1,l) == 1 then
+			minetest.set_node(pos, {name="air"})
+		end
+	end
+end
+
 if liqfin then
 	minetest.register_abm({
 		nodenames = {"default:water_flowing"},
 		neighbors = {"air"},
-		interval = 1,
-		chance = 5 ,
-		-- 5 day 5 * 15 night
-		action = function(pos, node)
-			logs.t0 = "verdunsten"
-			log_inc "verd.aufruf"
-			if hoehe == 1 or regen ~= -1 then return end
-			pos.y = pos.y + 1
-			local n = minetest.get_node(p).name
-			pos.y = pos.y - 1
-			if n == "air" then
-				pos.y = pos.y + 1
-				local l = 16 - licht_wert(pos,15)
-				pos.y = pos.y - 1
-				if l == 1 or math.random(1,l) == 1 then
-					log_inc "verdunstend"
-					minetest.set_node(pos, {name="air"})
-				end
-			end
-		end,
+		interval = 5,
+		chance = 1 ,
+		action = verdunsten,
 	})
 end
 
@@ -405,22 +417,35 @@ minetest.register_chatcommand("rain", {
 	func = regen_setzen
 })
 
+local function gib_fehlendes(player, liste)
+	local iv = player:get_inventory()
+	for i,st in ipairs(liste) do
+		local n = string.match(st, '[^%s]*')
+		if (minetest.registered_nodes[n]  or minetest.registered_tools[n])
+		and not iv:contains_item("main", st) then
+			iv:add_item("main", st)
+		end
+	end
+end
+
+local standard_inventory = {
+	"default:torch 4", "default:pick_wood", "default:apple 10",
+	"craft_guide:lcd_pc",
+}
+
 local function hello(player)
 	local n = player:get_player_name()
 	minetest.after(1,function()
 		minetest.chat_send_all("Wasserspiel begruest " .. n)
-		wasserspiel_info(n,"")
 	end)
+	if dbg then
+		gib_fehlendes(player, standard_inventory)
+	end
 	if dbgr(n) then
-		local iv = player:get_inventory()
-		for i,st in ipairs({
-			mn .. ":cloudlet 10", "default:torch 4", "default:pick_wood",
-			"default:water_source 10", "default:apple 10"
-		}) do
-			if not iv:contains_item("main", st) then
-				iv:add_item("main", st)
-			end
-		end
+		gib_fehlendes(player, standard_inventory)
+		gib_fehlendes(player, {
+			mn .. ":cloudlet 10", "default:water_source 10", "default:apple 10"
+		})
 	end
 end
 
@@ -430,27 +455,30 @@ minetest.register_on_newplayer(function(player)
 	local n = player:get_player_name()
 	minetest.after(1,function()
 		minetest.chat_send_all("Wasserspiel begruest " .. n .. " den neuen")
-		wasserspiel_info(n,"")
 	end)
-	local iv = player:get_inventory()
-	for i,st in ipairs({
-		"default:torch 4", "default:pick_wood", "default:apple 10"
-	}) do
-		if not iv:contains_item("main", st) then
-			iv:add_item("main", st)
-		end
-	end
+	gib_fehlendes(player, standard_inventory)
 end)
+
+if false then -- so nicht
+	minetest.register_on_respawnplayer(function(player)
+		local n = player:get_player_name()
+		minetest.after(1,function()
+			minetest.chat_send_all("Wasserspiel begruest " .. n .. " den Wiederbelebten")
+		end)
+		gib_fehlendes(player, standard_inventory)	
+	end)
+end
 
 local function step()
 	info.tm = minetest.get_timeofday()
 	
 	if dbg then
 		
-
+		logs.t0 = dump(minetest.registered_nodes["craft_guide:lcd_pc 2"])
 		
-	
-		local s = dump(logs)
+		--local s = dump(logs.full_log)
+		--local s = dump(logs.step_log)
+		--local s = dump(logs)
 		--local s = dump(logs)
 		--local s = "t0: " .. dump(logs.t0)
 		
@@ -463,6 +491,7 @@ local function step()
 	minetest.after(3, step)
 end
 
-minetest.after(1, step)
+step()
+--minetest.after(1, step)
 
 end
