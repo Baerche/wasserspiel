@@ -3,9 +3,21 @@ local dbg = nil ~= string.match(mn,"_dev$")
 if dbg then io.stdout:setvbuf("no") end
 
 local logs = {
-	t0 = {}
+	t0 = {}, full_log = {}
 }
 local info = {dbg = dbg, mn = mn}
+
+local function clear_logs()
+	logs.t = {}
+	logs.gezaehlt = {}
+	logs.step_log = {}
+	logs.stats = {}
+end
+
+clear_logs()
+
+
+
 
 if wasserspiel then
 
@@ -28,13 +40,6 @@ wasserspiel = {mn = mn}
 local versionen = {
 }
 
-local function clear_logs()
-	logs.t = {}
-	logs.z = {}
-end
-
-clear_logs()
-
 local m = mn .. ":"
 
 local regen = -1 --auto
@@ -55,8 +60,31 @@ local function dbgr(name,s)
 	return false
 end
 
-local function log_inc(s)
-	if logs.z[s] then logs.z[s] = logs.z[s] + 1 else logs.z[s] = 1 end 
+local function slog(o)
+	print ('LS: ' .. dump(o))
+	table.insert(logs.step_log,o)
+end
+
+local function flog(o)
+	print ('LS: ' .. dump(o))
+	table.insert(logs.full_log,o)
+end
+
+local function log_cnt(s)
+	if logs.gezaehlt[s] then logs.gezaehlt[s] = logs.gezaehlt[s] + 1 else logs.gezaehlt[s] = 1 end 
+end
+
+local function log_stat(s,n)
+	local l = logs.stats[s]
+	if not l then
+		l = {mit = 0, ges = 0, anz = 0, min = n, max = n, }
+		logs.stats[s] = l
+	end
+	l.ges = l.ges + n
+	l.anz = l.anz + 1
+	l.mit = l.ges / l.anz
+	if n < l.min then l.min = n end
+	if n > l.max then l.max = n end
 end
 
 local function log_t0_to (player, t0)
@@ -236,10 +264,66 @@ minetest.register_abm({
 	end,
 })
 
-local function neues_cloudlet(pos, node)
+
+-- entity-tropfen noch nicht fertig, nicht aktiviert
+
+local cb = 0.5
+minetest.register_entity(m .. "tropfen", {
+	state = nil,
+	initial_properties = {
+		hp_max = 1,
+		physical = true,
+		collide_with_objects = false,
+		collisionbox = {-cb,-cb,-cb, cb,cb,cb},
+		visual = "sprite",
+		visual_size = {x=1, y=1},
+		textures = {"default_water.png"},
+		spritediv = {x=1, y=1},
+		initial_sprite_basepos = {x=0, y=0},
+		is_visible = true,
+	},
+	on_punch = function(self, hitter)
+		local player = hitter
+		self.object:remove()
+	end,	
+	on_step = function(self, dtime)
+		self.state.alter = self.state.alter + dtime
+		if self.state.alter > 60 then
+			flog("Zu alt " .. dump({self.object:getpos(), self.state}))
+			self.object:remove()
+		end
+		local p = self.object:getpos()
+		p.y = p.y - .52
+		if minetest.get_node(p).name ~= "air" then
+			self.object:remove()
+			p.y = p.y + 1
+			if  minetest.get_node(p).name == "air" then
+				minetest.set_node(p, {name="default:water_source"})
+			end
+		end
+	end,
+	on_activate = function(self, staticdata)
+		staticdata = minetest.deserialize(staticdata)
+		self.state = staticdata or {}
+		local neu = self.state == {}
+		if not self.state.alter then self.state.alter = 0 end
+		if not staticdata then
+			self.object:setvelocity({x = 0, y = -5, z = 0})
+		end
+	end,
+	get_staticdata = function(self)
+		return minetest.serialize(state)
+	end,
+})
+
+local function neues_cloudlet(pos, node, active_object_count, active_object_count_wider)
+	if active_object_count >= 20 then --49 objects max
+		return 
+	end --engine-limit
 	local oy = pos.y
 	-- -1 nun lichtregen flag, 1 ist immer an
 	if regen == 0 or regen > 1 and math.random(regen) > 1 then return end
+	--if regen == 1 then regen = 4 end -- #objects bei 1 >50 per block
 	if string.match(node.name, ":desert_") then return end
 	local r = 1
 	pos.y = pos.y + 6
@@ -254,6 +338,10 @@ local function neues_cloudlet(pos, node)
 		local r = l <= 1 and 1 or math.random( 1,l )
 		if r > 1 then return end
 	end
+
+	local drumrum = minetest.get_objects_inside_radius(pos, 2)
+	if #drumrum > 0 then return end	
+
 	for x = -r,r do
 		p.x = pos.x + x
 		for y = -r-1,r do
@@ -270,7 +358,8 @@ local function neues_cloudlet(pos, node)
 	end
 	-- if nicht returned then nur air
 	if liqfin then
-		minetest.set_node(pos, {name="default:water_source"})
+		--minetest.set_node(pos, {name="default:water_source"})
+		local obj = minetest.add_entity(pos, m .. "tropfen")
 	else
 		minetest.set_node(pos, {name=m .. "cloudlet"})
 	end
@@ -403,22 +492,35 @@ minetest.register_chatcommand("rain", {
 	func = regen_setzen
 })
 
+local function gib_fehlendes(player, liste)
+	local iv = player:get_inventory()
+	for i,st in ipairs(liste) do
+		local n = string.match(st, '[^%s]*')
+		if (minetest.registered_nodes[n]  or minetest.registered_tools[n])
+		and not iv:contains_item("main", st) then
+			iv:add_item("main", st)
+		end
+	end
+end
+
+local standard_inventory = {
+	"default:torch 4", "default:pick_wood", "default:apple 10",
+	"craft_guide:lcd_pc",
+}
+
 local function hello(player)
 	local n = player:get_player_name()
 	minetest.after(1,function()
 		minetest.chat_send_all("Wasserspiel begruest " .. n)
-		wasserspiel_info(n,"")
 	end)
+	if dbg then
+		gib_fehlendes(player, standard_inventory)
+	end
 	if dbgr(n) then
-		local iv = player:get_inventory()
-		for i,st in ipairs({
-			mn .. ":cloudlet 10", "default:torch 4", "default:pick_wood",
-			"default:water_source 10", "default:apple 10"
-		}) do
-			if not iv:contains_item("main", st) then
-				iv:add_item("main", st)
-			end
-		end
+		gib_fehlendes(player, standard_inventory)
+		gib_fehlendes(player, {
+			mn .. ":cloudlet 10", "default:water_source 10", "default:apple 10"
+		})
 	end
 end
 
@@ -428,31 +530,43 @@ minetest.register_on_newplayer(function(player)
 	local n = player:get_player_name()
 	minetest.after(1,function()
 		minetest.chat_send_all("Wasserspiel begruest " .. n .. " den neuen")
-		wasserspiel_info(n,"")
 	end)
-	local iv = player:get_inventory()
-	for i,st in ipairs({
-		"default:torch 4", "default:pick_wood", "default:apple 10"
-	}) do
-		if not iv:contains_item("main", st) then
-			iv:add_item("main", st)
-		end
-	end
+	gib_fehlendes(player, standard_inventory)
 end)
+
+if false then -- so nicht
+	minetest.register_on_respawnplayer(function(player)
+		local n = player:get_player_name()
+		minetest.after(1,function()
+			minetest.chat_send_all("Wasserspiel begruest " .. n .. " den Wiederbelebten")
+		end)
+		gib_fehlendes(player, standard_inventory)	
+	end)
+end
 
 local function step()
 	info.tm = minetest.get_timeofday()
 	
 	if dbg then
 		
-
+		local player = minetest.get_player_by_name("debugger")
+		if player then
+			local drumrum = minetest.get_objects_inside_radius(player:getpos(), 50)
+			if logs.gezaehlt["tropfen ueberlauf"] then
+				log_t0_to (player, logs.gezaehlt["tropfen ueberlauf"] .. " tropfen ueberlauf")
+			end
+		end
 		
-	
-		local s = dump(logs)
+		print(dump(logs.stats))
+		print(dump(logs.gezaehlt))
+
+		--local s = dump(logs.gezaehlt)
+		--local s = dump(logs.full_log)
+		--local s = dump(logs.step_log)
+		--local s = dump(logs)
 		--local s = dump(logs)
 		--local s = "t0: " .. dump(logs.t0)
 		
-		print (s)
 		
 		--minetest.chat_send_player("debugger", s)
 		
@@ -461,6 +575,6 @@ local function step()
 	minetest.after(3, step)
 end
 
-minetest.after(1, step)
+step()
 
 end
