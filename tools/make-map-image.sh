@@ -2,7 +2,7 @@
 set -eu
 IFS='
 '
-cd $(dirname $0)
+cd $(dirname $0)/..
 
 W=wasserspiel
 

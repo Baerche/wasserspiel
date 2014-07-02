@@ -48,7 +48,7 @@ end
 
 local choose_version_desc = {
 	func = choose_version, 
-	description = "Wasserspiel Version setzen. Nach setzen muss neu gestarted werden",
+	description = "Wasserspiel Version setzen. Nach setzen muss neu gestarted werden.",
 	params = "version-id",	
 }
 
@@ -62,7 +62,7 @@ minetest.register_on_joinplayer(function(player)
 	end)
 end)
 
-dofile(minetest.get_modpath(minetest.get_current_modname()) .. "/" .. saved_config.zuletzt_benutzt .. "/wasserspiel.lua")
+dofile(minetest.get_modpath(minetest.get_current_modname()) .. "/ws_" .. saved_config.zuletzt_benutzt .. "/wasserspiel.lua")
 
 
 

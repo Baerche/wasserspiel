@@ -2,7 +2,7 @@ run:
 	cat makefile
 	pkill minetest || true
 	
-	minetest --config my-minetest.conf
+	minetest --config tools/my-minetest.conf
 	
 	#minetest --go --name debugger
 	
