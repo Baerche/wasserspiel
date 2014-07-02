@@ -1,0 +1,25 @@
+#bei 1280x1024 console sichtbar lassen
+screenW = 1200
+screenH = 850
+enable_shaders = false
+#
+
+#bei 1280x1024 fast ganz
+screenW = 1200
+screenH = 950
+enable_shaders = false
+#
+
+#fullscreen pretty
+screenW = 800
+screenH = 600
+fullscreen = true
+enable_shaders = true
+#
+
+#fullscreen fast
+screenW = 800
+screenH = 600
+fullscreen = true
+enable_shaders = false
+#
