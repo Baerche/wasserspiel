@@ -1,3 +1,5 @@
+wasserspiel = {}
+
 local config_file = minetest.get_worldpath() .. "/wasserspiel.txt"
 local saved_config = {}
 
@@ -61,6 +63,8 @@ minetest.register_on_joinplayer(function(player)
 		minetest.chat_send_player(n, "Hier laeuft Wasserpiel/" .. aktiv)
 	end)
 end)
+
+wasserspiel.dbg = saved_config.zuletzt_benutzt == "dev"
 
 dofile(minetest.get_modpath(minetest.get_current_modname()) .. "/ws_" .. saved_config.zuletzt_benutzt .. "/wasserspiel.lua")
 

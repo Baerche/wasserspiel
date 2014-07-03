@@ -1,5 +1,4 @@
-local mn = minetest.get_current_modname()
-local dbg = nil ~= string.match(mn,"_dev$")
+local dbg = wasserspiel.dbg
 if dbg then io.stdout:setvbuf("no") end
 
 local logs = {
@@ -16,30 +15,13 @@ end
 
 clear_logs()
 
-
-
-
-if wasserspiel then
-
-local s = "Mehrere wasserspiel-mods geladen, '" ..mn .. "' deaktivierte sich, '"
-.. wasserspiel.mn .. "' laeuft."
-print (s)
-
-minetest.register_on_joinplayer(function(player)
-	print(s)
-	minetest.after(1,function()
-		minetest.chat_send_player(player:get_player_name(),":"..s)
-	end)
-end)
-
-else
-
-
-wasserspiel = {mn = mn}
+local is_freeminer = minetest.setting_getbool("liquid_real")
+local is_minetest = not is_freeminer
 
 local versionen = {
 }
 
+local mn = minetest.get_current_modname()
 local m = mn .. ":"
 
 local regen = -1 --auto
@@ -49,7 +31,10 @@ local p = {} -- temporary pos
 local config_file = minetest.get_worldpath() .. "/wasserspiel.txt"
 local saved_config = {}
 info.wld = string.match(minetest.get_worldpath(),".*/(.*)")
-local liqfin = minetest.setting_getbool("liquid_finite")
+
+local liqfin = minetest.setting_getbool("liquid_finite") 
+	or minetest.setting_getbool("liquid_real")
+
 info.liqfin = liqfin
 
 local function dbgr(name,s)
@@ -87,7 +72,7 @@ local function log_stat(s,n)
 	if n > l.max then l.max = n end
 end
 
-local function log_t0_to (player, t0)
+local function log_to (player, t0)
 	logs.t0 = t0
 	local n = player:get_player_name()
 	print("@" .. n .. ": " .. t0)
@@ -106,14 +91,6 @@ local function save()
 	f:close()		
 end
 
-local function alias_alte_versionen()
-	for v,_ in pairs(versionen) do
-		if v ~= mn then
-			minetest.register_alias(v .. ":cloudlet", m .. "cloudlet")
-		end
-	end
-end
-
 local function load()
     local f = io.open(config_file, "r")
     if f then
@@ -126,12 +103,6 @@ local function load()
 			versionen = t.benutzte_versionen
 		end
 	end
-	versionen["wasserspiel"] = true --release-compat
-	if not versionen[mn] then
-		versionen[mn] = true
-		save()
-	end
-	alias_alte_versionen()
 end
 
 load()
@@ -193,37 +164,13 @@ end
 alle_rutschen()
 
 local function cloudlet_info(itemstack, player, ps)
-	if not debug then return end
-	minetest.chat_send_player(player:get_player_name(), "")
-	logs.t0 = nil
+	minetest.chat_send_player(player:get_player_name(), "---infos:")
 	wasserspiel_info(player:get_player_name())
-	local l
-	if ps.above then
-		p.x = ps.above.x; p.z = ps.above.z; p.y = ps.above.y + 6
-		l = licht_text(p)
-	else
-		l = "nix"
-	end
-	log_t0_to (player, table.concat ({
-		"TYPE: " .. ps.type,
-		"LIGHT: ", l,
-		"UNDER: " ..
-		licht_text(ps.under), 
-		ps.under and minetest.get_node(ps.under).name or "nix",
-		ps.under and ps.under.y or "nix",
-		"GROUPS: " .. (ps.under and
-			dump(minetest.registered_nodes[minetest.get_node(ps.under).name].groups)
-			or "nix"),
-		"ABOVE: " ..
-		licht_text(ps.above),
-		ps.above and minetest.get_node(ps.above).name or "nix",
-		ps.above and ps.above.y or "nix",
-		"NODE: " ..
-		(ps.above and dump(minetest.get_node(ps.above)) or "nix"),
+	log_to (player, table.concat ({
+		"HIT: " .. (ps.under and minetest.get_node(ps.under).name or "nix"),
+		"ABOVE: " .. (ps.above and minetest.get_node(ps.above).name or "nix"),
+		"LEGS: " .. minetest.get_node(player:getpos()).name,
 		"INV#1: " .. player:get_inventory():get_stack("main", 1):to_string(),
-		"@" .. minetest.get_node(player:getpos()).name,
-		"UNDER_ALL: " .. (ps.under and dump(minetest.registered_nodes[minetest.get_node(ps.under).name]) or "nix"),
-		"WALKABLE: " .. (ps.under and dump(minetest.registered_nodes[minetest.get_node(ps.under).name].walkable) or "nix"),
 	}, ", "))
 end
 
@@ -317,9 +264,8 @@ minetest.register_entity(m .. "tropfen", {
 })
 
 local function neues_cloudlet(pos, node, active_object_count, active_object_count_wider)
-	if active_object_count >= 20 then --49 objects max
-		return 
-	end --engine-limit
+	local use_no_object = is_minetest and active_object_count >= 20
+	--engine-limit 49 objects max, 20 problem in minetest
 	local oy = pos.y
 	-- -1 nun lichtregen flag, 1 ist immer an
 	if regen == 0 or regen > 1 and math.random(regen) > 1 then return end
@@ -358,8 +304,11 @@ local function neues_cloudlet(pos, node, active_object_count, active_object_coun
 	end
 	-- if nicht returned then nur air
 	if liqfin then
-		--minetest.set_node(pos, {name="default:water_source"})
-		local obj = minetest.add_entity(pos, m .. "tropfen")
+		if use_no_object then
+			minetest.set_node(pos, {name="default:water_source"})
+		else
+			minetest.add_entity(pos, m .. "tropfen")
+		end
 	else
 		minetest.set_node(pos, {name=m .. "cloudlet"})
 	end
@@ -473,7 +422,7 @@ local function regen_setzen(name, param)
 		if param == "" then
 			logs.t0 = "Regen: " .. regen .. ", Hoehe " .. hoehe
 		else
-			local r, h = string.match(param,"(\-?%d*),?(%d*)")
+			local r, h = string.match(param,"(-?%d*),?(%d*)")
 			logs.t0 = ""
 			if r ~= "" then
 				logs.t0 = "Regen von " .. regen .. " auf " .. r
@@ -505,21 +454,18 @@ end
 
 local standard_inventory = {
 	"default:torch 4", "default:pick_wood", "default:apple 10",
-	"craft_guide:lcd_pc",
+	"craft_guide:lcd_pc", m .. "cloudlet"
 }
 
 local function hello(player)
 	local n = player:get_player_name()
 	minetest.after(1,function()
+		gib_fehlendes(player, standard_inventory)	
 		minetest.chat_send_all("Wasserspiel begruest " .. n)
 	end)
-	if dbg then
-		gib_fehlendes(player, standard_inventory)
-	end
 	if dbgr(n) then
-		gib_fehlendes(player, standard_inventory)
 		gib_fehlendes(player, {
-			mn .. ":cloudlet 10", "default:water_source 10", "default:apple 10"
+			mn .. ":cloudlet 10", "default:water_source 10"
 		})
 	end
 end
@@ -531,7 +477,6 @@ minetest.register_on_newplayer(function(player)
 	minetest.after(1,function()
 		minetest.chat_send_all("Wasserspiel begruest " .. n .. " den neuen")
 	end)
-	gib_fehlendes(player, standard_inventory)
 end)
 
 if false then -- so nicht
@@ -540,7 +485,6 @@ if false then -- so nicht
 		minetest.after(1,function()
 			minetest.chat_send_all("Wasserspiel begruest " .. n .. " den Wiederbelebten")
 		end)
-		gib_fehlendes(player, standard_inventory)	
 	end)
 end
 
@@ -553,7 +497,7 @@ local function step()
 		if player then
 			local drumrum = minetest.get_objects_inside_radius(player:getpos(), 50)
 			if logs.gezaehlt["tropfen ueberlauf"] then
-				log_t0_to (player, logs.gezaehlt["tropfen ueberlauf"] .. " tropfen ueberlauf")
+				log_to (player, logs.gezaehlt["tropfen ueberlauf"] .. " tropfen ueberlauf")
 			end
 		end
 		
@@ -577,4 +521,3 @@ end
 
 step()
 
-end

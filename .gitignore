@@ -7,4 +7,6 @@ clicopy.txt
 scratch*
 *-minetest.conf
 /downloads/
-
+screenshot_*
+debug.txt
+*-freeminer.conf

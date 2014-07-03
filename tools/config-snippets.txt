@@ -2,24 +2,42 @@
 screenW = 1200
 screenH = 850
 enable_shaders = false
+fullscreen = false
 #
 
 #bei 1280x1024 fast ganz
 screenW = 1200
 screenH = 950
 enable_shaders = false
+fullscreen = false
 #
 
-#fullscreen pretty
+
+###fullscreen pretty
 screenW = 800
 screenH = 600
 fullscreen = true
-enable_shaders = true
 #
+
+liquid_finite = true
+
+enable_shaders = true
+anisotropic_filter = true
+bilinear_filter = true
+enable_bumpmapping = true
+enable_parallax_occlusion = true
+enable_waving_leaves = true
+enable_waving_plants = true
+enable_waving_water = true
+mip_map = true
+preload_item_visuals = false
+trilinear_filter = true
+###
 
 #fullscreen fast
 screenW = 800
 screenH = 600
 fullscreen = true
 enable_shaders = false
+liquid_finite = true
 #

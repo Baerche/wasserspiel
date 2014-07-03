@@ -14,7 +14,7 @@ echo ${MOD}
 D0=$HOME/.minetest/mods
 mkdir $D0 -p
 D=$D0/$MOD
-rm -f $D
+trash-put $D
 ln -s $PWD $D
 
 ls -l $D0

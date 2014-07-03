@@ -1,8 +1,10 @@
 run:
 	cat makefile
 	pkill minetest || true
+	pkill freeminer || true
 	
-	minetest --config tools/my-minetest.conf
+	minetest --config tools/my-minetest.conf &
+	#~/freeminer-4.9.3/bin/freeminer --config tools/my-freeminer.conf &
 	
 	#minetest --go --name debugger
 	
