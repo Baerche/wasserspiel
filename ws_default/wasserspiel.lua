@@ -324,6 +324,7 @@ minetest.register_abm({
 })
 
 local function tropfen(pos, node)
+	if not liqfin then return end
 	pos.y = pos.y - 1
 	if minetest.get_node(pos).name == "air" then
 		minetest.set_node(pos, {name="default:water_source"})

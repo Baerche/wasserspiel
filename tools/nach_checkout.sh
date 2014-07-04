@@ -17,6 +17,10 @@ D=$D0/$MOD
 trash-put $D
 ln -s $PWD $D
 
-ls -l $D0
+D0=$HOME/minetest-4.10-git/mods
+mkdir $D0 -p
+D=$D0/$MOD
+trash-put $D
+ln -s $PWD $D
 
 

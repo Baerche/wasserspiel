@@ -1,3 +1,70 @@
+# fullscreen
+screenW = 800
+screenH = 600
+fullscreen = true
+#
+
+# minetest-4.10-git
+menu_last_game = minetest-minetest_game-253af00
+name = 
+server_dedicated = false
+enable_shaders = true
+fixed_map_seed = 
+mainmenu_last_selected_world = 1
+mg_name = indev
+selected_world_path = /home/baerchen/minetest-4.10-git/bin/../worlds/welt
+#
+
+
+#medium freeminer fullscreen schnell genug
+screenW = 800	
+screenH = 600
+fullscreen = true
+disable_wieldlight = false
+enable_shaders = true
+farmesh = 3
+enable_waving_leaves = false
+enable_waving_plants = false
+enable_waving_water = false
+enable_bumpmapping = false
+enable_parallax_occlusion = false
+
+#medium freeminer schnell genug
+screenW = 640
+screenH = 480
+fullscreen = false
+disable_wieldlight = false
+enable_shaders = true
+farmesh = 3
+enable_waving_leaves = false
+enable_waving_plants = false
+enable_waving_water = false
+enable_bumpmapping = false
+enable_parallax_occlusion = false
+
+#medium freeminer 1
+screenW = 640
+screenH = 480
+fullscreen = false
+disable_wieldlight = false
+enable_shaders = true
+farmesh = 3
+#
+
+#medium freeminer schnell genug gerade so
+screenW = 640
+screenH = 480
+fullscreen = false
+disable_wieldlight = false
+enable_shaders = true
+farmesh = 3
+enable_waving_leaves = false
+enable_waving_plants = false
+enable_waving_water = false
+enable_bumpmapping = false
+#
+
+
 #bei 1280x1024 console sichtbar lassen
 screenW = 1200
 screenH = 850
@@ -12,12 +79,18 @@ enable_shaders = false
 fullscreen = false
 #
 
+#fullscreen medium
+screenW = 800
+screenH = 600
+fullscreen = true
+liquid_finite = true
+
+#
 
 ###fullscreen pretty
 screenW = 800
 screenH = 600
 fullscreen = true
-#
 
 liquid_finite = true
 
