@@ -394,6 +394,7 @@ if not liqfin then
 end
 
 function verdunsten(pos, node)
+	if not liqfin then return end
 	if hoehe == 1 or regen ~= -1 then return end
 	pos.y = pos.y + 1
 	local n = minetest.get_node(p).name
