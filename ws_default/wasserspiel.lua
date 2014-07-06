@@ -274,7 +274,11 @@ local function neues_cloudlet(pos, node, active_object_count, active_object_coun
 	local r = 1
 	pos.y = pos.y + 6
 	if hoehe > 1 then
-		pos.y = pos.y + hoehe - 1
+		if liqfin then
+			pos.y = pos.y + hoehe - 1
+		else
+			pos.y = pos.y + hoehe/2 - 1
+		end
 	end
 	-- 20 ok
 	if regen < 0 then
@@ -464,31 +468,27 @@ local function hello(player)
 	minetest.after(1,function()
 		gib_fehlendes(player, standard_inventory)	
 		minetest.chat_send_all("Wasserspiel begruest " .. n)
+		if dbgr(n) then
+			gib_fehlendes(player, {
+				mn .. ":cloudlet 10", "default:water_source 10"
+			})
+		end
 	end)
-	if dbgr(n) then
-		gib_fehlendes(player, {
-			mn .. ":cloudlet 10", "default:water_source 10"
-		})
-	end
 end
 
 minetest.register_on_joinplayer(hello)
 
 minetest.register_on_newplayer(function(player)
 	local n = player:get_player_name()
-	minetest.after(1,function()
-		minetest.chat_send_all("Wasserspiel begruest " .. n .. " den neuen")
-	end)
 end)
 
-if false then -- so nicht
-	minetest.register_on_respawnplayer(function(player)
-		local n = player:get_player_name()
-		minetest.after(1,function()
-			minetest.chat_send_all("Wasserspiel begruest " .. n .. " den Wiederbelebten")
-		end)
+minetest.register_on_respawnplayer(function(player)
+	local n = player:get_player_name()
+	minetest.after(1,function()
+		gib_fehlendes(player, standard_inventory)
+		minetest.chat_send_all("Wasserspiel begruest " .. n .. " den Wiederbelebten")
 	end)
-end
+end)
 
 local function step()
 	info.tm = minetest.get_timeofday()
