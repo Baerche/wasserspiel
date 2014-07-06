@@ -6,13 +6,15 @@ fullscreen = true
 
 # minetest-4.10-git
 menu_last_game = minetest-minetest_game-253af00
-name = 
+name = singleplayer
 server_dedicated = false
 enable_shaders = true
 fixed_map_seed = 
 mainmenu_last_selected_world = 1
 mg_name = indev
 selected_world_path = /home/baerchen/minetest-4.10-git/bin/../worlds/welt
+maintab_LAST = singleplayer
+port = 30000
 #
 
 

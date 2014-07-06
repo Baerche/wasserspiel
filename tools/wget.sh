@@ -8,7 +8,14 @@ cd downloads
 P=$HOME/.minetest/mods/my_defaultpack
 mkdir -p $P
 
-if true; then
+
+
+
+exit ### sachen drunter werden irgnoriert weil fertig
+
+#geht nicht
+#wget -c https://github.com/HybridDog/riesenpilz/archive/master.zip -O riesenpilz.zip
+
 Z=MinetestAmbience.zip
 S=MinetestAmbience-master
 M=ambience
@@ -17,11 +24,9 @@ trash-put $S
 unzip $Z
 trash-put $P/$M
 mv $S/$M $P/$M
-fi
 
 #wget -c http://realbadangel.pl/technic_ambience.zip #kaputt
 
-if true; then
 Z=minetest-craft_guide.zip
 S=minetest-craft_guide-master
 D=craft_guide
@@ -30,6 +35,5 @@ trash-put $S
 unzip $Z
 trash-put $P/$D
 mv $S/$D $P/$D
-fi
 
 
