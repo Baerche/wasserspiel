@@ -319,7 +319,7 @@ minetest.register_abm({
 	nodenames = {"group:crumbly", "group:cracky", "group:snappy", "group:oddly_breakable_by_hand"},
 	neighbors = {"air"},
 	interval = 1,
-	chance = 100,
+	chance = liqfin and 100 or 2500,
 	action = neues_cloudlet,
 })
 
