@@ -142,7 +142,7 @@ local function rutschen(player)
 	p.y = p.y + 1
 	local above_dort = minetest.registered_nodes[minetest.get_node(p).name]
 	p.y = p.y - 1
-	if dort.walkable and above_dort.walkable then
+	if dort.walkable or above_dort.walkable then
 		minetest.sound_play("default_gravel_footstep")
 	else
 		player:setpos(p)
