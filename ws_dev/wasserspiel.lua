@@ -135,9 +135,10 @@ minetest.register_chatcommand("ws?", {func = wasserspiel_info})
 
 local function rutschen(player)
 	local pos = player:getpos()
-	p.x = pos.x + math.random(-1,1)
-	p.y = pos.y + math.random(-1,0)
-	p.z = pos.z + math.random(-1,1)
+	--2d non diagonal
+	p.x = pos.x + (math.random(2) == 1 and -1 or 1)
+	p.z = pos.z + (math.random(2) == 1 and -1 or 1)
+	p.y = pos.y
 	local dort = minetest.registered_nodes[minetest.get_node(p).name]
 	p.y = p.y + 1
 	local above_dort = minetest.registered_nodes[minetest.get_node(p).name]
@@ -398,6 +399,7 @@ if not liqfin then
 end
 
 function verdunsten(pos, node)
+	if freeminer then return end
 	if not liqfin then return end
 	if hoehe == 1 or regen ~= -1 then return end
 	pos.y = pos.y + 1
@@ -523,3 +525,12 @@ end
 
 step()
 
+if dbg then
+	minetest.after(1, function()
+		for i,v in pairs(minetest.registered_craftitems) do
+			print(v.name)
+			print(dump(minetest.get_craft_recipe(v.
+			name)))
+		end
+	end)
+end
