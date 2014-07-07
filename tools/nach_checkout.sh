@@ -8,10 +8,14 @@ IFS='
 cd $(dirname $0)/..
 
 MOD=${PWD##*/}
-echo ${MOD}
-
 
 D0=$HOME/.minetest/mods
+mkdir $D0 -p
+D=$D0/$MOD
+trash-put $D
+ln -s $PWD $D
+
+D0=$HOME/.freeminer/mods
 mkdir $D0 -p
 D=$D0/$MOD
 trash-put $D
@@ -22,6 +26,8 @@ mkdir $D0 -p
 D=$D0/$MOD
 trash-put $D
 ln -s $PWD $D
+
+exit
 
 D0=$HOME/freeminer-4.9.3-git/mods
 mkdir $D0 -p

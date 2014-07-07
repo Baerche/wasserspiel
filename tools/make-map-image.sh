@@ -10,6 +10,10 @@ WW=$HOME/.minetest/worlds
 W=welt
 WW=$HOME/minetest-4.10-git/worlds
 
+W=pur
+WW=$HOME/.freeminer/worlds
+
+
 I=$WW/$W.png
 M=/tmp/mapping
 pwd
