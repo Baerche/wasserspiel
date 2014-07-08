@@ -133,20 +133,21 @@ local function wasserspiel_info(name, param)
 end
 minetest.register_chatcommand("ws?", {func = wasserspiel_info})
 
+local rutsch_dirs = {{-1,0},{1,0},{0,-1},{0,1}}
 local function rutschen(player)
 	local pos = player:getpos()
 	--2d non diagonal
-	p.x = pos.x + (math.random(2) == 1 and -1 or 1)
-	p.z = pos.z + (math.random(2) == 1 and -1 or 1)
-	p.y = pos.y
-	local dort = minetest.registered_nodes[minetest.get_node(p).name]
-	p.y = p.y + 1
-	local above_dort = minetest.registered_nodes[minetest.get_node(p).name]
-	p.y = p.y - 1
+	local d = rutsch_dirs[math.random(#rutsch_dirs)]
+	pos.x = pos.x + d[1]
+	pos.z = pos.z + d[2]
+	local dort = minetest.registered_nodes[minetest.get_node(pos).name]
+	pos.y = pos.y + 1
+	local above_dort = minetest.registered_nodes[minetest.get_node(pos).name]
+	pos.y = pos.y - 1
 	if dort.walkable or above_dort.walkable then
 		minetest.sound_play("default_gravel_footstep")
 	else
-		player:setpos(p)
+		player:setpos(pos)
 		--player:moveto(p,true) --geht nicht beim laufen
 		minetest.sound_play("default_sand_footstep")
 	end
@@ -492,32 +493,22 @@ minetest.register_on_respawnplayer(function(player)
 	end)
 end)
 
+local function print_log(s)
+	print(s)
+	local pn = "debugger"
+	local player = minetest.get_player_by_name(pn)
+	if player then
+		minetest.chat_send_player(pn, s)
+	end
+end
+
 local function step()
 	info.tm = minetest.get_timeofday()
 	
 	if dbg then
 		
-		local player = minetest.get_player_by_name("debugger")
-		if player then
-			local drumrum = minetest.get_objects_inside_radius(player:getpos(), 50)
-			if logs.gezaehlt["tropfen ueberlauf"] then
-				log_to (player, logs.gezaehlt["tropfen ueberlauf"] .. " tropfen ueberlauf")
-			end
-		end
-		
-		print(dump(logs.stats))
-		print(dump(logs.gezaehlt))
+		print_log(dump(logs.gezaehlt))
 
-		--local s = dump(logs.gezaehlt)
-		--local s = dump(logs.full_log)
-		--local s = dump(logs.step_log)
-		--local s = dump(logs)
-		--local s = dump(logs)
-		--local s = "t0: " .. dump(logs.t0)
-		
-		
-		--minetest.chat_send_player("debugger", s)
-		
 	end
 	clear_logs()
 	minetest.after(3, step)
