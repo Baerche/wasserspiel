@@ -32,8 +32,8 @@ local config_file = minetest.get_worldpath() .. "/wasserspiel.txt"
 local saved_config = {}
 info.wld = string.match(minetest.get_worldpath(),".*/(.*)")
 
-local liqfin = minetest.setting_getbool("liquid_finite") 
-	or minetest.setting_getbool("liquid_real")
+local liqfin = is_minetest and minetest.setting_getbool("liquid_finite") 
+	or is_freeminer and minetest.setting_getbool("liquid_real")
 
 info.liqfin = liqfin
 
@@ -133,9 +133,17 @@ local function wasserspiel_info(name, param)
 end
 minetest.register_chatcommand("ws?", {func = wasserspiel_info})
 
+-- rundungsfehler bei getpos().y kleiner 0 zu klein
+local function beinpos(player)
+	local pos = player:getpos()
+	pos.y = pos.y + .01
+	return pos
+end
+
+
 local rutsch_dirs = {{-1,0},{1,0},{0,-1},{0,1}}
 local function rutschen(player)
-	local pos = player:getpos()
+	local pos = beinpos(player)
 	--2d non diagonal
 	local d = rutsch_dirs[math.random(#rutsch_dirs)]
 	pos.x = pos.x + d[1]
@@ -156,7 +164,7 @@ end
 local function alle_rutschen()
 	for i,player in ipairs(minetest.get_connected_players()) do
 		if true -- math.random(5) == 1
-		and	minetest.get_node(player:getpos()).name == "default:water_flowing" then
+		and	minetest.get_node(beinpos(player)).name == "default:water_flowing" then
 			rutschen(player)
 		end
 	end
@@ -168,11 +176,14 @@ alle_rutschen()
 local function cloudlet_info(itemstack, player, ps)
 	minetest.chat_send_player(player:get_player_name(), "---infos:")
 	wasserspiel_info(player:get_player_name())
+	local p = beinpos(player)
 	log_to (player, table.concat ({
 		"HIT: " .. (ps.under and minetest.get_node(ps.under).name or "nix"),
 		"ABOVE: " .. (ps.above and minetest.get_node(ps.above).name or "nix"),
-		"LEGS: " .. minetest.get_node(player:getpos()).name,
 		"INV#1: " .. player:get_inventory():get_stack("main", 1):to_string(),
+		"LEGS: " .. minetest.get_node(beinpos(player)).name,
+		--"LEGS: " .. minetest.get_node(player:getpos()).name, --rundungsfehler
+		--"Y: " .. player:getpos().y
 	}, ", "))
 end
 
