@@ -25,14 +25,12 @@ D0=$HOME/minetest-4.10-git/mods
 mkdir $D0 -p
 D=$D0/$MOD
 trash-put $D
-ln -s $PWD $D
-
-exit
+#ln -s $PWD $D # benutzt .minetest/mods
 
 D0=$HOME/freeminer-4.9.3-git/mods
 mkdir $D0 -p
 D=$D0/$MOD
 trash-put $D
-ln -s $PWD $D
+#ln -s $PWD $D benutzt .freeminer/mods
 
 
