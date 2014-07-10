@@ -140,6 +140,9 @@ local function beinpos(player)
 	return pos
 end
 
+local function bein2playerpos(beinpos)
+	beinpos.y = beinpos.y - .01
+end
 
 local rutsch_dirs = {{-1,0},{1,0},{0,-1},{0,1}}
 local function rutschen(player)
@@ -155,6 +158,7 @@ local function rutschen(player)
 	if dort.walkable or above_dort.walkable then
 		minetest.sound_play("default_gravel_footstep")
 	else
+		bein2playerpos(pos)
 		player:setpos(pos)
 		--player:moveto(p,true) --geht nicht beim laufen
 		minetest.sound_play("default_sand_footstep")
@@ -183,7 +187,7 @@ local function cloudlet_info(itemstack, player, ps)
 		"INV#1: " .. player:get_inventory():get_stack("main", 1):to_string(),
 		"LEGS: " .. minetest.get_node(beinpos(player)).name,
 		--"LEGS: " .. minetest.get_node(player:getpos()).name, --rundungsfehler
-		--"Y: " .. player:getpos().y
+		"Y: " .. player:getpos().y
 	}, ", "))
 end
 
@@ -410,7 +414,7 @@ if not liqfin then
 	})
 end
 
-function verdunsten(pos, node)
+local function verdunsten(pos, node)
 	if freeminer then return end
 	if not liqfin then return end
 	if hoehe == 1 or regen ~= -1 then return end
