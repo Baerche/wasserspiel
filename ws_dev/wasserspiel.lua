@@ -281,13 +281,13 @@ minetest.register_entity(m .. "tropfen", {
 })
 
 local function neues_cloudlet(pos, node, active_object_count, active_object_count_wider)
+	--engine-limit 49 objects max, 20 problem in minetest 4.9
 	local use_no_object = is_minetest and active_object_count >= 20
-	--engine-limit 49 objects max, 20 problem in minetest
 	local oy = pos.y
-	-- -1 nun lichtregen flag, 1 ist immer an
+	-- -1 macht regenstärke lichtabhängig, 1.. ist immer an per zufall, 0 aus
 	if regen == 0 or regen > 1 and math.random(regen) > 1 then return end
-	--if regen == 1 then regen = 4 end -- #objects bei 1 >50 per block
-	if string.match(node.name, ":desert_") then return end
+	-- nicht in wüste, und kein türmebauen auf anderen cloudlets
+	if string.match(node.name, ":desert_|"..m.."cloudlet") then return end
 	local r = 1
 	pos.y = pos.y + 6
 	if hoehe > 1 then
