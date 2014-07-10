@@ -13,6 +13,9 @@ WW=$HOME/minetest-4.10-git/worlds
 W=pur
 WW=$HOME/.freeminer/worlds
 
+W=410welt
+WW=$HOME/.minetest/worlds
+
 
 I=$WW/$W.png
 M=/tmp/mapping
