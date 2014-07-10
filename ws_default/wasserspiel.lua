@@ -32,8 +32,8 @@ local config_file = minetest.get_worldpath() .. "/wasserspiel.txt"
 local saved_config = {}
 info.wld = string.match(minetest.get_worldpath(),".*/(.*)")
 
-local liqfin = minetest.setting_getbool("liquid_finite") 
-	or minetest.setting_getbool("liquid_real")
+local liqfin = is_minetest and minetest.setting_getbool("liquid_finite") 
+	or is_freeminer and minetest.setting_getbool("liquid_real")
 
 info.liqfin = liqfin
 
@@ -133,9 +133,20 @@ local function wasserspiel_info(name, param)
 end
 minetest.register_chatcommand("ws?", {func = wasserspiel_info})
 
+-- rundungsfehler bei getpos().y kleiner 0 zu klein
+local function beinpos(player)
+	local pos = player:getpos()
+	pos.y = pos.y + .01
+	return pos
+end
+
+local function bein2playerpos(beinpos)
+	beinpos.y = beinpos.y - .01
+end
+
 local rutsch_dirs = {{-1,0},{1,0},{0,-1},{0,1}}
 local function rutschen(player)
-	local pos = player:getpos()
+	local pos = beinpos(player)
 	--2d non diagonal
 	local d = rutsch_dirs[math.random(#rutsch_dirs)]
 	pos.x = pos.x + d[1]
@@ -147,6 +158,7 @@ local function rutschen(player)
 	if dort.walkable or above_dort.walkable then
 		minetest.sound_play("default_gravel_footstep")
 	else
+		bein2playerpos(pos)
 		player:setpos(pos)
 		--player:moveto(p,true) --geht nicht beim laufen
 		minetest.sound_play("default_sand_footstep")
@@ -156,7 +168,7 @@ end
 local function alle_rutschen()
 	for i,player in ipairs(minetest.get_connected_players()) do
 		if true -- math.random(5) == 1
-		and	minetest.get_node(player:getpos()).name == "default:water_flowing" then
+		and	minetest.get_node(beinpos(player)).name == "default:water_flowing" then
 			rutschen(player)
 		end
 	end
@@ -168,11 +180,14 @@ alle_rutschen()
 local function cloudlet_info(itemstack, player, ps)
 	minetest.chat_send_player(player:get_player_name(), "---infos:")
 	wasserspiel_info(player:get_player_name())
+	local p = beinpos(player)
 	log_to (player, table.concat ({
 		"HIT: " .. (ps.under and minetest.get_node(ps.under).name or "nix"),
 		"ABOVE: " .. (ps.above and minetest.get_node(ps.above).name or "nix"),
-		"LEGS: " .. minetest.get_node(player:getpos()).name,
 		"INV#1: " .. player:get_inventory():get_stack("main", 1):to_string(),
+		"LEGS: " .. minetest.get_node(beinpos(player)).name,
+		--"LEGS: " .. minetest.get_node(player:getpos()).name, --rundungsfehler
+		"Y: " .. player:getpos().y
 	}, ", "))
 end
 
@@ -266,13 +281,13 @@ minetest.register_entity(m .. "tropfen", {
 })
 
 local function neues_cloudlet(pos, node, active_object_count, active_object_count_wider)
+	--engine-limit 49 objects max, 20 problem in minetest 4.9
 	local use_no_object = is_minetest and active_object_count >= 20
-	--engine-limit 49 objects max, 20 problem in minetest
 	local oy = pos.y
-	-- -1 nun lichtregen flag, 1 ist immer an
+	-- -1 macht regenstärke lichtabhängig, 1.. ist immer an per zufall, 0 aus
 	if regen == 0 or regen > 1 and math.random(regen) > 1 then return end
-	--if regen == 1 then regen = 4 end -- #objects bei 1 >50 per block
-	if string.match(node.name, ":desert_") then return end
+	-- nicht in wüste, und kein türmebauen auf anderen cloudlets
+	if string.match(node.name, ":desert_|"..m.."cloudlet") then return end
 	local r = 1
 	pos.y = pos.y + 6
 	if hoehe > 1 then
@@ -399,7 +414,7 @@ if not liqfin then
 	})
 end
 
-function verdunsten(pos, node)
+local function verdunsten(pos, node)
 	if freeminer then return end
 	if not liqfin then return end
 	if hoehe == 1 or regen ~= -1 then return end
