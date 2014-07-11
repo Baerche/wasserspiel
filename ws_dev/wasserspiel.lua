@@ -332,7 +332,6 @@ minetest.register_entity(m .. "tropfen", {
 })
 
 local function neues_cloudlet(pos, node, active_object_count, active_object_count_wider)
-	log_cnt "abm neues"
 	-- -1 macht regenstärke lichtabhängig, 1.. ist immer an per zufall, 0 aus
 	if regen == 0 or regen > 1 and math.random(regen) > 1 then return end
 	-- nicht in wüste
@@ -345,7 +344,6 @@ local function neues_cloudlet(pos, node, active_object_count, active_object_coun
 		if r > 1 then return end
 	end
 	if minetest.get_node(pos).name ~= "air" then return end
-	log_cnt "wirklich neues"
 	minetest.add_entity(pos, m .. "tropfen")
 	--s minetest.sound_play("default_glass_footstep", {pos = pos, gain = 0.5}) 
 end
@@ -384,7 +382,6 @@ local function erosion (pos, node)
 	p.y = pos.y + math.random(-1,0)
 	p.z = pos.z + math.random(-1,1)
 	if "default:water_flowing" == minetest.get_node(p).name then
-		--gras, blumen verhindern erosion. theoretisch. klappt nicht.
 		pos.y = pos.y + 1
 		local n = minetest.get_node(pos).name
 		pos.y = pos.y - 1
@@ -406,9 +403,7 @@ minetest.register_abm({
 })
 
 local function einzelne_watersources_loeschen(pos, node)
-	log_cnt "watersources"
 	if not is_watersource_stabil(pos) then
-		log_cnt "watersources unstabil"
 		minetest.set_node(pos, {name="air"})
 	end
 end
@@ -446,6 +441,88 @@ if liqfin then
 		chance = 1 ,
 		action = verdunsten,
 	})
+end
+
+local function landlose_watersources_loeschen(pos)
+	local p = {y = pos.y}
+	local kontakt = false
+	local abgesuchte_dist = 0
+	local max_dist = 10
+	local funde = 0
+	for dist = 1, max_dist do
+		abgesuchte_dist = dist
+		local fand_wasser = false
+		for x = -dist, dist, dist do
+			p.x = pos.x + x
+			for z = -dist, dist, dist do
+				p.z = pos.z + z
+				if x ~= 0 or z ~= 0 then
+					local n = minetest.get_node(p).name
+					log_cnt(dist .. " gab " .. n)
+					local is_wasser = minetest.get_item_group(n, "water") > 0
+					if is_wasser then
+						fand_wasser = true
+						funde = funde + 1
+					end
+					if n ~= "air" and not is_wasser then
+						kontakt = true
+						log_cnt "kontakt"
+						break
+					end
+				end
+			end
+		end
+		log_stat("wasseranteil", fand_wasser and 1 or 0)
+		if not fand_wasser then -- nur air
+			log_cnt "hmm"
+			break
+		end
+	end
+	log_stat ("funde", funde)
+	if not kontakt or abgesuchte_dist == max_dist or abgesuchte_dist == 1 then
+		log_stat ("landhabend", abgesuchte_dist)
+		return
+	end
+	log_stat ("landlos", abgesuchte_dist)
+	local geloescht = 0
+	for dist = 1, abgesuchte_dist - 1 do
+		for x = -dist, dist, dist do
+			p.x = pos.x + x
+			for z = -dist, dist, dist do
+				p.z = pos.z + z
+				local n = minetest.get_node(p).name
+				if  minetest.get_item_group(n, "water") > 0 then
+					minetest.set_node(p, {name="air"})
+					geloescht = geloescht + 1
+				end
+			end
+		end
+	end
+	log_stat ("geloescht", geloescht)
+end
+
+local function schwimmwassertest()
+	for i,player in ipairs(minetest.get_connected_players()) do
+		local pos = beinpos(player)
+		if true -- math.random(5) == 1
+		and	minetest.get_item_group(minetest.get_node(pos).name, "water") then
+			log_cnt "schwimm"
+			landlose_watersources_loeschen(pos)
+		end
+	end
+	minetest.after(3, schwimmwassertest)
+end
+
+schwimmwassertest() --trigger after
+
+if false then
+minetest.register_abm({
+	nodenames = {"default:water_source"},
+	neighbors = {"air", "default:water_source"},
+	interval = 1,
+	chance = dbg and 1 or 600,
+	action = landlose_watersources_loeschen,
+})
 end
 
 --
@@ -488,7 +565,8 @@ local function gib_fehlendes(player, liste)
 end
 
 local standard_inventory = {
-	"default:torch 4", "default:pick_wood", "default:apple 10",
+	"default:torch 4", "default:pick_stone", "default:apple 4",
+	"default:ladder 4",
 }
 
 local function hello(player)
@@ -498,7 +576,6 @@ local function hello(player)
 		minetest.chat_send_all("Wasserspiel begruest " .. n)
 		if dbgr(n) then
 			gib_fehlendes(player, {
-				"default:ladder 10",
 				mn .. ":cloudlet 10", "default:water_source 10"
 			})
 		end
