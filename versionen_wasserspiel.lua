@@ -26,7 +26,7 @@ if not saved_config.zuletzt_benutzt then
 end
 local aktiv = saved_config.zuletzt_benutzt
 
-local verfuegbare_versionen = {"dev", "default"}
+local verfuegbare_versionen = {"dev", "default", "kristalltuerme"}
 
 local function choose_version(name, param)
 	if string.match(param, "%d") then
