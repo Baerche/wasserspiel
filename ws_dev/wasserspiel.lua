@@ -24,7 +24,7 @@ local versionen = {
 local mn = minetest.get_current_modname()
 local m = mn .. ":"
 
-local regen = -1 --auto
+local regen = -1 --lichtabhängig
 local hoehe = 30
 local p = {} -- temporary pos
 
@@ -32,10 +32,16 @@ local config_file = minetest.get_worldpath() .. "/wasserspiel.txt"
 local saved_config = {}
 info.wld = string.match(minetest.get_worldpath(),".*/(.*)")
 
-local liqfin = is_minetest and minetest.setting_getbool("liquid_finite") 
-	or is_freeminer and minetest.setting_getbool("liquid_real")
+local liqfin = is_freeminer and minetest.setting_getbool("liquid_real")
+	-- mit 4.9, wie unterscheiden?
+	-- or is_minetest and minetest.setting_getbool("liquid_finite") 
 
 info.liqfin = liqfin
+
+
+--
+-- logging
+--
 
 local function dbgr(name,s)
 	if dbg and name == "debugger" then
@@ -45,21 +51,32 @@ local function dbgr(name,s)
 	return false
 end
 
+-- logs sammeln und nach programmstart ausgeben. Leichter zu sehen beim debuggen
+-- ausserdem, statistiken werden alle paar sekunden ausgegeben. Log scrollt weg.
+-- also wird das log auch alle paar sekunden wieder ausgegeben.
+
+--step-log wird nach step-ausgabe gelöscht
 local function slog(o)
 	print ('LS: ' .. dump(o))
 	table.insert(logs.step_log,o)
 end
 
+-- full_log bleibt komplett, hauptsächlich für startausgaben
 local function flog(o)
 	print ('LS: ' .. dump(o))
 	table.insert(logs.full_log,o)
 end
 
-local function log_cnt(s)
+-- zählt
+local function log_cnt(zaehl_dies)
+	local s = zaehl_dies
 	if logs.gezaehlt[s] then logs.gezaehlt[s] = logs.gezaehlt[s] + 1 else logs.gezaehlt[s] = 1 end 
 end
 
-local function log_stat(s,n)
+-- macht statistik: mittelwert, min max. aufruf:
+local function log_stat(zaehl_dies,aktueller_wert)
+	local s = zaehl_dies
+	local n = aktueller_wert
 	local l = logs.stats[s]
 	if not l then
 		l = {mit = 0, ges = 0, anz = 0, min = n, max = n, }
@@ -72,12 +89,16 @@ local function log_stat(s,n)
 	if n > l.max then l.max = n end
 end
 
+--veraltet, bleibt noch als api-beispiel
 local function log_to (player, t0)
-	logs.t0 = t0
 	local n = player:get_player_name()
 	print("@" .. n .. ": " .. t0)
 	minetest.chat_send_player(n, t0)
 end
+
+--
+--config und so persistenz
+--
 
 local function save()
 	local t = saved_config
@@ -107,6 +128,10 @@ end
 
 load()
 
+--
+-- licht-tools
+--
+
 local function licht_text(pos)
 	if not pos then return "nicht in welt" end
 	if string.match( minetest.get_node(pos).name,":water_") then return "wasser-bug" end
@@ -119,6 +144,8 @@ local function licht_wert(pos, wenn_fehlt)
 	return minetest.get_node_light(pos) or wenn_fehlt
 end
 
+
+-- alte info-funktion, mal aufräumen
 local function wasserspiel_info(name, param)
 	info.you = name
 	info.regen = regen
@@ -132,6 +159,10 @@ local function wasserspiel_info(name, param)
 	end
 end
 minetest.register_chatcommand("ws?", {func = wasserspiel_info})
+
+--
+-- rutschen
+--
 
 -- rundungsfehler bei getpos().y kleiner 0 zu klein
 local function beinpos(player)
@@ -156,12 +187,11 @@ local function rutschen(player)
 	local above_dort = minetest.registered_nodes[minetest.get_node(pos).name]
 	pos.y = pos.y - 1
 	if dort.walkable or above_dort.walkable then
-		minetest.sound_play("default_gravel_footstep")
+		--s minetest.sound_play("default_gravel_footstep")
 	else
 		bein2playerpos(pos)
 		player:setpos(pos)
-		--player:moveto(p,true) --geht nicht beim laufen
-		minetest.sound_play("default_sand_footstep")
+		--s minetest.sound_play("default_sand_footstep")
 	end
 end
 
@@ -175,7 +205,16 @@ local function alle_rutschen()
 	minetest.after(1, alle_rutschen)
 end
 
-alle_rutschen()
+alle_rutschen() -- trigger after
+
+--
+-- cloudlets wurden benutzt um wasserquellen festzuhalten und wieder zu löschen.
+-- setzen in die luft ging nicht, gingen kaputt
+-- und löschen brauchte eine markierung für die abm
+-- das fliegt raus.
+--
+-- nebenbei als debuganzeigetool benutzt
+--
 
 local function cloudlet_info(itemstack, player, ps)
 	minetest.chat_send_player(player:get_player_name(), "---infos:")
@@ -193,29 +232,13 @@ end
 
 minetest.register_node(m .. "cloudlet", {
 	tiles = {"default_cloud.png"},
- 	-- light_source = 15,
 	drawtype = "glasslike",
 	tiles = {"default_glass.png"},
-	
 	groups = {oddly_breakable_by_hand=3},
-	on_construct = function(pos)
-		if debug then
-			minetest.get_meta(pos):set_string("infotext",dump{minetest:get_node_light(p)})
-		end
-		pos.y = pos.y + 1
-		minetest.set_node(pos, {name="default:water_source"})
-		pos.y = pos.y - 1
-		if not liqfin then minetest.sound_play("default_glass_footstep", {pos = pos, gain = 0.5}) end
-	end,
-	on_destruct = function(pos)
-		pos.y = pos.y + 1
-		minetest.set_node(pos, {name="air"})
-		pos.y = pos.y - 1
-		if not liqfin then minetest.sound_play("default_break_glass", {pos = pos, gain = 0.3}) end
-	end,
 	on_use = cloudlet_info,
 })
 
+-- cloudlet wieder löschen, aufräumen für alte maps
 minetest.register_abm({
 	nodenames = {m .. "cloudlet"},
 	interval = liqfin and 2 or 3,
@@ -228,8 +251,27 @@ minetest.register_abm({
 	end,
 })
 
+--
+-- regentools
+--
 
--- entity-tropfen noch nicht fertig, nicht aktiviert
+local function is_watersource_stabil(p)
+	local p2 = {y = p.y}
+	for x = -1, 1,2 do
+		for z = -1, 1, 2 do
+			p2.x = p.x + x
+			p2.z = p.z + z
+			if minetest.get_node(p2).name == "default:water_source" then
+				return true
+			end
+		end
+	end
+	return false
+end
+
+--
+-- regen nun per objekte
+--
 
 local cb = 0.5
 minetest.register_entity(m .. "tropfen", {
@@ -260,10 +302,15 @@ minetest.register_entity(m .. "tropfen", {
 		p.y = p.y - .52
 		if minetest.get_node(p).name ~= "air" then
 			self.object:remove()
-			p.y = p.y + 1
-			if  minetest.get_node(p).name == "air" then
-				minetest.set_node(p, {name="default:water_source"})
+			p.y = p.y + .52
+			if  minetest.get_node(p).name ~= "air" then
+				return
 			end
+			if is_watersource_stabil(p) then 
+				return
+			end
+			minetest.set_node(p, {name="default:water_source"})
+			--s minetest.sound_play("default_break_glass", {pos = pos, gain = 0.3})
 		end
 	end,
 	on_activate = function(self, staticdata)
@@ -281,59 +328,22 @@ minetest.register_entity(m .. "tropfen", {
 })
 
 local function neues_cloudlet(pos, node, active_object_count, active_object_count_wider)
-	--engine-limit 49 objects max, 20 problem in minetest 4.9
-	local use_no_object = is_minetest and active_object_count >= 20
-	local oy = pos.y
+	log_cnt "abm neues"
 	-- -1 macht regenstärke lichtabhängig, 1.. ist immer an per zufall, 0 aus
 	if regen == 0 or regen > 1 and math.random(regen) > 1 then return end
-	-- nicht in wüste, und kein türmebauen auf anderen cloudlets
-	if string.match(node.name, ":desert_|"..m.."cloudlet") then return end
+	-- nicht in wüste
+	if string.match(node.name, ":desert_") then return end
+	pos.y = pos.y + 20
 	local r = 1
-	pos.y = pos.y + 6
-	if hoehe > 1 then
-		if liqfin then
-			pos.y = pos.y + hoehe - 1
-		else
-			pos.y = pos.y + hoehe/2 - 1
-		end
-	end
-	-- 20 ok
 	if regen < 0 then
 		local l = licht_wert(pos, 16) -- 2 .. 17
-		pos.y = pos.y - 1
-		--l = l * l
 		local r = l <= 1 and 1 or math.random( 1,l )
 		if r > 1 then return end
 	end
-
-	local drumrum = minetest.get_objects_inside_radius(pos, 2)
-	if #drumrum > 0 then return end	
-
-	for x = -r,r do
-		p.x = pos.x + x
-		for y = -r-1,r do
-			p.y = pos.y + y
-			for z = -r,r do
-				p.z = pos.z + z
-				local n = minetest.get_node(p).name
-				if n ~= "air" then
-					pos.y = oy
-					return
-				end
-			end
-		end
-	end
-	-- if nicht returned then nur air
-	if liqfin then
-		if use_no_object then
-			minetest.set_node(pos, {name="default:water_source"})
-		else
-			minetest.add_entity(pos, m .. "tropfen")
-		end
-	else
-		minetest.set_node(pos, {name=m .. "cloudlet"})
-	end
-	pos.y = oy
+	if minetest.get_node(pos).name ~= "air" then return end
+	log_cnt "wirklich neues"
+	minetest.add_entity(pos, m .. "tropfen")
+	--s minetest.sound_play("default_glass_footstep", {pos = pos, gain = 0.5}) 
 end
 
 minetest.register_abm({
@@ -344,35 +354,37 @@ minetest.register_abm({
 	action = neues_cloudlet,
 })
 
+--
+-- extras
+--
+
 local function tropfen(pos, node)
-	if not liqfin then return end
 	pos.y = pos.y - 1
 	if minetest.get_node(pos).name == "air" then
-		minetest.set_node(pos, {name="default:water_source"})
-		minetest.sound_play("default_glass_footstep", {pos = pos, gain = 0.5})
+		minetest.add_entity(pos, m .. "tropfen")
+		--s minetest.sound_play("default_glass_footstep", {pos = pos, gain = 0.5})
 	end
-	pos.y = pos.y + 1
 end
 
-if liqfin then
-	minetest.register_abm({
-		nodenames = {"default:stone"},
-		neighbors = {"air"},
-		interval = 1,
-		chance = 1000,
-		action = tropfen,
-	})
-end
+minetest.register_abm({
+	nodenames = {"default:stone"},
+	neighbors = {"air"},
+	interval = 1,
+	chance = 1000,
+	action = tropfen,
+})
 
 local function erosion (pos, node)
 	p.x = pos.x + math.random(-1,1)
 	p.y = pos.y + math.random(-1,0)
 	p.z = pos.z + math.random(-1,1)
 	if "default:water_flowing" == minetest.get_node(p).name then
+		--gras, blumen verhindern erosion. theoretisch. klappt nicht.
 		pos.y = pos.y + 1
 		local n = minetest.get_node(pos).name
 		pos.y = pos.y - 1
 		if minetest.get_item_group(n, "group:flora") == 0 then
+			-- TODO meta-inf und so fehlt.
 			local o = minetest.get_node(p)
 			minetest.set_node(p, minetest.get_node(pos))
 			minetest.set_node(pos, o)
@@ -388,31 +400,21 @@ minetest.register_abm({
 	action = erosion,
 })
 
-if not liqfin then
-	minetest.register_abm({
-		nodenames = {"default:water_source"},
-		neighbors = {"air"},
-		interval = 1,
-		chance = 1,
-		action = function(pos, node)
-			for x = -1,1 do
-				p.x = pos.x + x
-				for y = -1,1 do
-					p.y = pos.y + y
-					for z = -1,1 do
-						p.z = pos.z + z
-						local n = minetest.get_node(p).name
-						if n ~= "air" and n ~= "default:water_flowing" 
-						and (x ~= 0 or y ~= 0 or z ~= 0) then
-							return
-						end
-					end
-				end
-			end
-			minetest.set_node(pos, {name="air"})
-		end,
-	})
+local function einzelne_watersources_loeschen(pos, node)
+	log_cnt "watersources"
+	if not is_watersource_stabil(pos) then
+		log_cnt "watersources unstabil"
+		minetest.set_node(pos, {name="air"})
+	end
 end
+minetest.register_abm({
+	nodenames = {"default:water_source"},
+	neighbors = {"air"},
+	interval = 1,
+	chance = 1,
+	action = einzelne_watersources_loeschen,
+})
+
 
 local function verdunsten(pos, node)
 	if freeminer then return end
@@ -441,7 +443,11 @@ if liqfin then
 	})
 end
 
-local function regen_setzen(name, param)
+--
+-- chat-commands
+--
+
+local function regenstaerke_setzen(name, param)
 		logs.t0 = {}
 		if param == "" then
 			logs.t0 = "Regen: " .. regen .. ", Hoehe " .. hoehe
@@ -462,7 +468,7 @@ local function regen_setzen(name, param)
 	end
 	
 minetest.register_chatcommand("rain", {
-	func = regen_setzen
+	func = regenstaerke_setzen
 })
 
 local function gib_fehlendes(player, liste)
@@ -478,7 +484,6 @@ end
 
 local standard_inventory = {
 	"default:torch 4", "default:pick_wood", "default:apple 10",
-	"craft_guide:lcd_pc", m .. "cloudlet"
 }
 
 local function hello(player)
@@ -488,6 +493,7 @@ local function hello(player)
 		minetest.chat_send_all("Wasserspiel begruest " .. n)
 		if dbgr(n) then
 			gib_fehlendes(player, {
+				"default:ladder 10",
 				mn .. ":cloudlet 10", "default:water_source 10"
 			})
 		end
@@ -496,10 +502,6 @@ end
 
 minetest.register_on_joinplayer(hello)
 
-minetest.register_on_newplayer(function(player)
-	local n = player:get_player_name()
-end)
-
 minetest.register_on_respawnplayer(function(player)
 	local n = player:get_player_name()
 	minetest.after(1,function()
@@ -507,6 +509,10 @@ minetest.register_on_respawnplayer(function(player)
 		minetest.chat_send_all("Wasserspiel begruest " .. n .. " den Wiederbelebten")
 	end)
 end)
+
+--
+-- logging 2
+--
 
 local function print_log(s)
 	print(s)
@@ -517,12 +523,16 @@ local function print_log(s)
 	end
 end
 
+
 local function step()
 	info.tm = minetest.get_timeofday()
 	
 	if dbg then
 		
-		print_log(dump(logs.gezaehlt))
+		print_log(""
+			.. " GEZAEHLT " .. dump(logs.gezaehlt)
+			.. " STATS " .. dump(logs.stats)
+		)
 
 	end
 	clear_logs()
@@ -531,12 +541,12 @@ end
 
 step()
 
+-- sollte extra mod sein, war gerade neugierig
 if dbg then
 	minetest.after(1, function()
 		for i,v in pairs(minetest.registered_craftitems) do
 			print(v.name)
-			print(dump(minetest.get_craft_recipe(v.
-			name)))
+			print(dump(minetest.get_craft_recipe(v.name)))
 		end
 	end)
 end
