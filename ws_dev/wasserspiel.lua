@@ -450,6 +450,7 @@ local function landlose_watersources_loeschen(pos)
 	local max_dist = 10
 	local funde = 0
 	for dist = 1, max_dist do
+		log_cnt "loop"
 		dist_wasserhaltig = dist - 1
 		local fand_wasser = false
 		for x = -dist, dist, dist do
@@ -458,7 +459,7 @@ local function landlose_watersources_loeschen(pos)
 				p.z = pos.z + z
 				if x ~= 0 or z ~= 0 then
 					local n = minetest.get_node(p).name
-					log_cnt(dist .. " gab " .. n)
+					log_cnt ("gab " .. n)
 					local is_wasser = minetest.get_item_group(n, "water") > 0
 					if is_wasser then
 						fand_wasser = true
@@ -466,20 +467,16 @@ local function landlose_watersources_loeschen(pos)
 					end
 					if n ~= "air" and not is_wasser then
 						kontakt = true
-						log_cnt "kontakt"
 						break
 					end
 				end
 			end
 		end
 		if not fand_wasser then -- nur air
-			log_stat ("bremse", dist) 
 			break
 		end
 	end
-	log_stat ("funde", funde)
 	if kontakt or dist_wasserhaltig == max_dist then
-		log_stat ("landhabend", dist_wasserhaltig)
 		return
 	end
 	log_stat ("landlos", dist_wasserhaltig)
@@ -514,7 +511,7 @@ end
 
 schwimmwassertest() --trigger after
 
-if false then
+if true then
 minetest.register_abm({
 	nodenames = {"default:water_source"},
 	neighbors = {"air", "default:water_source"},
@@ -623,7 +620,7 @@ end
 step()
 
 -- sollte extra mod sein, war gerade neugierig
-if dbg then
+if false and dbg then
 	minetest.after(1, function()
 		for i,v in pairs(minetest.registered_craftitems) do
 			print(v.name)
