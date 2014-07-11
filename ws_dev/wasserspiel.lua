@@ -398,7 +398,7 @@ minetest.register_abm({
 	nodenames =  {"group:crumbly"},
 	neighbors = {"default:water_flowing"},
 	interval = 1,
-	chance = 3,
+	chance = 1000,
 	action = erosion,
 })
 
@@ -448,9 +448,7 @@ local function landlose_watersources_loeschen(pos)
 	local kontakt = false
 	local dist_wasserhaltig = 0
 	local max_dist = 10
-	local funde = 0
 	for dist = 1, max_dist do
-		log_cnt "loop"
 		dist_wasserhaltig = dist - 1
 		local fand_wasser = false
 		for x = -dist, dist, dist do
@@ -459,11 +457,9 @@ local function landlose_watersources_loeschen(pos)
 				p.z = pos.z + z
 				if x ~= 0 or z ~= 0 then
 					local n = minetest.get_node(p).name
-					log_cnt ("gab " .. n)
 					local is_wasser = minetest.get_item_group(n, "water") > 0
 					if is_wasser then
 						fand_wasser = true
-						funde = funde + 1
 					end
 					if n ~= "air" and not is_wasser then
 						kontakt = true
@@ -477,10 +473,10 @@ local function landlose_watersources_loeschen(pos)
 		end
 	end
 	if kontakt or dist_wasserhaltig == max_dist then
+		log_stat ("landkontakt", dist_wasserhaltig)
 		return
 	end
 	log_stat ("landlos", dist_wasserhaltig)
-	local geloescht = 0
 	for dist = 1, dist_wasserhaltig do
 		for x = -dist, dist, dist do
 			p.x = pos.x + x
@@ -489,34 +485,33 @@ local function landlose_watersources_loeschen(pos)
 				local n = minetest.get_node(p).name
 				if  minetest.get_item_group(n, "water") > 0 then
 					minetest.set_node(p, {name="air"})
-					geloescht = geloescht + 1
 				end
 			end
 		end
 	end
-	log_stat ("geloescht", geloescht)
 end
 
-local function schwimmwassertest()
-	for i,player in ipairs(minetest.get_connected_players()) do
-		local pos = beinpos(player)
-		if true -- math.random(5) == 1
-		and	minetest.get_item_group(minetest.get_node(pos).name, "water") then
-			log_cnt "schwimm"
-			landlose_watersources_loeschen(pos)
+if true then
+	local function schwimmwassertest()
+		for i,player in ipairs(minetest.get_connected_players()) do
+			local pos = beinpos(player)
+			if true -- math.random(5) == 1
+			and	minetest.get_item_group(minetest.get_node(pos).name, "water") > 0 then
+				log_cnt "schwimm"
+				landlose_watersources_loeschen(pos)
+			end
 		end
+		minetest.after(3, schwimmwassertest)
 	end
-	minetest.after(3, schwimmwassertest)
+	schwimmwassertest() --trigger after
 end
-
-schwimmwassertest() --trigger after
 
 if true then
 minetest.register_abm({
 	nodenames = {"default:water_source"},
-	neighbors = {"air", "default:water_source"},
+	neighbors = {"air", "group:water"},
 	interval = 1,
-	chance = dbg and 1 or 600,
+	chance = 600,
 	action = landlose_watersources_loeschen,
 })
 end
