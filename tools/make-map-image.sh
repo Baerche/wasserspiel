@@ -3,9 +3,9 @@ set -eu
 IFS='
 '
 cd $(dirname $0)/..
-. user/$(git config --get user.name).sh
+. user/$(git config --get user.name)/config.sh
 
-W=$MAP_WELT
+W=$WELT
 WW=$MAP_WORLDS
 
 I=$WW/$W.png
