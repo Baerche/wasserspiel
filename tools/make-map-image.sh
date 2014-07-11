@@ -3,19 +3,10 @@ set -eu
 IFS='
 '
 cd $(dirname $0)/..
+. user/$(git config --get user.name).sh
 
-W=wasserspiel
-WW=$HOME/.minetest/worlds
-
-W=welt
-WW=$HOME/minetest-4.10-git/worlds
-
-W=pur
-WW=$HOME/.freeminer/worlds
-
-W=410welt
-WW=$HOME/.minetest/worlds
-
+W=$MAP_WELT
+WW=$MAP_WORLDS
 
 I=$WW/$W.png
 M=/tmp/mapping
