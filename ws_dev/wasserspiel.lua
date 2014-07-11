@@ -261,7 +261,8 @@ local function is_watersource_stabil(p)
 		for z = -1, 1, 2 do
 			p2.x = p.x + x
 			p2.z = p.z + z
-			if minetest.get_node(p2).name == "default:water_source" then
+			local n = minetest.get_node(p2).name
+			if n == "default:water_source" or n == "ignore" then
 				return true
 			end
 		end
@@ -302,6 +303,9 @@ minetest.register_entity(m .. "tropfen", {
 		p.y = p.y - .52
 		if minetest.get_node(p).name ~= "air" then
 			self.object:remove()
+			if minetest.get_item_group(minetest.get_node(p).name, "water") > 0 then
+				return
+			end			
 			p.y = p.y + .52
 			if  minetest.get_node(p).name ~= "air" then
 				return
@@ -350,7 +354,8 @@ minetest.register_abm({
 	nodenames = {"group:crumbly", "group:cracky", "group:snappy", "group:oddly_breakable_by_hand"},
 	neighbors = {"air"},
 	interval = 1,
-	chance = liqfin and 100 or 2500,
+	chance = liqfin and 100 or 1000,
+	--chance = liqfin and 100 or 2500,
 	action = neues_cloudlet,
 })
 
@@ -383,7 +388,7 @@ local function erosion (pos, node)
 		pos.y = pos.y + 1
 		local n = minetest.get_node(pos).name
 		pos.y = pos.y - 1
-		if minetest.get_item_group(n, "group:flora") == 0 then
+		if minetest.get_item_group(n, "flora") == 0 then
 			-- TODO meta-inf und so fehlt.
 			local o = minetest.get_node(p)
 			minetest.set_node(p, minetest.get_node(pos))
@@ -396,7 +401,7 @@ minetest.register_abm({
 	nodenames =  {"group:crumbly"},
 	neighbors = {"default:water_flowing"},
 	interval = 1,
-	chance = 1000,
+	chance = 3,
 	action = erosion,
 })
 
@@ -411,7 +416,7 @@ minetest.register_abm({
 	nodenames = {"default:water_source"},
 	neighbors = {"air"},
 	interval = 1,
-	chance = 1,
+	chance = 2,
 	action = einzelne_watersources_loeschen,
 })
 
@@ -525,7 +530,7 @@ end
 
 
 local function step()
-	info.tm = minetest.get_timeofday()
+	info.tm = (minetest.get_timeofday() or 0) * 24
 	
 	if dbg then
 		
