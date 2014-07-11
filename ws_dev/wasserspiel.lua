@@ -446,11 +446,11 @@ end
 local function landlose_watersources_loeschen(pos)
 	local p = {y = pos.y}
 	local kontakt = false
-	local abgesuchte_dist = 0
+	local dist_wasserhaltig = 0
 	local max_dist = 10
 	local funde = 0
 	for dist = 1, max_dist do
-		abgesuchte_dist = dist
+		dist_wasserhaltig = dist - 1
 		local fand_wasser = false
 		for x = -dist, dist, dist do
 			p.x = pos.x + x
@@ -472,20 +472,19 @@ local function landlose_watersources_loeschen(pos)
 				end
 			end
 		end
-		log_stat("wasseranteil", fand_wasser and 1 or 0)
 		if not fand_wasser then -- nur air
-			log_cnt "hmm"
+			log_stat ("bremse", dist) 
 			break
 		end
 	end
 	log_stat ("funde", funde)
-	if not kontakt or abgesuchte_dist == max_dist or abgesuchte_dist == 1 then
-		log_stat ("landhabend", abgesuchte_dist)
+	if kontakt or dist_wasserhaltig == max_dist then
+		log_stat ("landhabend", dist_wasserhaltig)
 		return
 	end
-	log_stat ("landlos", abgesuchte_dist)
+	log_stat ("landlos", dist_wasserhaltig)
 	local geloescht = 0
-	for dist = 1, abgesuchte_dist - 1 do
+	for dist = 1, dist_wasserhaltig do
 		for x = -dist, dist, dist do
 			p.x = pos.x + x
 			for z = -dist, dist, dist do
