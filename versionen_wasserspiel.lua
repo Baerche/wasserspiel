@@ -54,8 +54,8 @@ local choose_version_desc = {
 	params = "version-id",	
 }
 
-minetest.register_chatcommand("wsv", choose_version_desc)
-minetest.register_chatcommand("ws-version", choose_version_desc)
+minetest.register_chatcommand("ws/v", choose_version_desc)
+minetest.register_chatcommand("ws/version", choose_version_desc)
 
 minetest.register_on_joinplayer(function(player)
 	local n = player:get_player_name()
@@ -65,6 +65,7 @@ minetest.register_on_joinplayer(function(player)
 end)
 
 wasserspiel.dbg = saved_config.zuletzt_benutzt == "dev"
+wasserspiel.version = saved_config.zuletzt_benutzt
 
 dofile(minetest.get_modpath(minetest.get_current_modname()) .. "/ws_" .. saved_config.zuletzt_benutzt .. "/wasserspiel.lua")
 

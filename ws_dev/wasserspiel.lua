@@ -150,15 +150,14 @@ local function wasserspiel_info(name, param)
 	info.you = name
 	info.regen = regen
 	info.hoehe = hoehe
-	minetest.chat_send_player(name, dump(info))
-	if dbgr(name) then
-		minetest.chat_send_player(name, dump(logs))
-		print("@" .. name)
-		print(dump(logs))
-		print(dump(info))
-	end
+	info.version = wasserspiel.version
+	local s = dump(info)
+	minetest.chat_send_player(name, s)
+	logs.full_log = {}
+	flog (s)
 end
-minetest.register_chatcommand("ws?", {func = wasserspiel_info})
+minetest.register_chatcommand("ws/info", {func = wasserspiel_info})
+minetest.register_chatcommand("ws/i", {func = wasserspiel_info})
 
 --
 -- rutschen
@@ -451,6 +450,7 @@ if liqfin then
 end
 
 local function landlose_watersources_loeschen(pos)
+	log_cnt "loeschversuch"
 	local p = {y = pos.y}
 	local kontakt = false
 	local dist_wasserhaltig = 0
@@ -479,7 +479,7 @@ local function landlose_watersources_loeschen(pos)
 			break
 		end
 	end
-	if kontakt or dist_wasserhaltig == max_dist then
+	if kontakt or dist_wasserhaltig == max_dist - 1 then
 		log_stat ("landkontakt", dist_wasserhaltig)
 		return
 	end
@@ -547,9 +547,7 @@ local function regenstaerke_setzen(name, param)
 		minetest.chat_send_player(name, dump(logs.t0))
 	end
 	
-minetest.register_chatcommand("rain", {
-	func = regenstaerke_setzen
-})
+minetest.register_chatcommand("ws/rain", {func = regenstaerke_setzen})
 
 local function gib_fehlendes(player, liste)
 	local iv = player:get_inventory()
@@ -609,10 +607,9 @@ local function step()
 	
 	if dbg then
 		
-		print_log(""
-			.. " GEZAEHLT " .. dump(logs.gezaehlt)
-			.. " STATS " .. dump(logs.stats)
-		)
+		if next(logs.full_log) ~= nil then print_log("LOG " .. dump(logs.full_log)) end
+		if next(logs.gezaehlt) ~= nil then print_log("GEZAEHLT " .. dump(logs.gezaehlt)) end
+		if next(logs.stats) ~= nil then print_log("STATS " .. dump(logs.stats)) end
 
 	end
 	clear_logs()
