@@ -15,3 +15,4 @@ pwd
 echo $CMD
 IFS=$OIFS #hmm
 $CMD
+$CLEANUP

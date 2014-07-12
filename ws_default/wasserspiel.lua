@@ -398,14 +398,16 @@ local function erosion (pos, node)
 		end
 	end
 end
-	
-minetest.register_abm({
-	nodenames =  {"group:crumbly"},
-	neighbors = {"default:water_flowing"},
-	interval = 1,
-	chance = 1000,
-	action = erosion,
-})
+
+if not freeminer then -- hat eigene
+	minetest.register_abm({
+		nodenames =  {"group:crumbly"},
+		neighbors = {"default:water_flowing"},
+		interval = 1,
+		chance = 1000,
+		action = erosion,
+	})
+end
 
 --nach einer weile sollen die pfützen wieder verschwinden
 local function einzelne_watersources_loeschen(pos, node)
@@ -423,8 +425,6 @@ minetest.register_abm({
 
 
 local function verdunsten(pos, node)
-	if freeminer then return end
-	if not liqfin then return end
 	if hoehe == 1 or regen ~= -1 then return end
 	pos.y = pos.y + 1
 	local n = minetest.get_node(p).name
@@ -439,7 +439,7 @@ local function verdunsten(pos, node)
 	end
 end
 
-if liqfin then
+if liqfin and not freeminer then
 	minetest.register_abm({
 		nodenames = {"default:water_flowing"},
 		neighbors = {"air"},
