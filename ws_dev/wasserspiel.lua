@@ -331,7 +331,14 @@ minetest.register_entity(m .. "tropfen", {
 	end,
 })
 
+-- engine-limit
+local function objekt_platz_voll(active_object_count)
+	return active_object_count >= 20
+end
+
+
 local function neues_cloudlet(pos, node, active_object_count, active_object_count_wider)
+	if objekt_platz_voll(active_object_count) then return end 
 	-- -1 macht regenstärke lichtabhängig, 1.. ist immer an per zufall, 0 aus
 	if regen == 0 or regen > 1 and math.random(regen) > 1 then return end
 	-- nicht in wüste
@@ -360,8 +367,8 @@ minetest.register_abm({
 --
 -- extras
 --
-
-local function tropfen(pos, node)
+local function tropfen(pos, node, active_object_count, active_object_count_wider)
+	if objekt_platz_voll(active_object_count) then return end
 	pos.y = pos.y - 1
 	if minetest.get_node(pos).name == "air" then
 		minetest.add_entity(pos, m .. "tropfen")
