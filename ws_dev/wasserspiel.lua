@@ -186,11 +186,11 @@ local function rutschen(player)
 	local above_dort = minetest.registered_nodes[minetest.get_node(pos).name]
 	pos.y = pos.y - 1
 	if dort.walkable or above_dort.walkable then
-		--s minetest.sound_play("default_gravel_footstep")
+		minetest.sound_play("default_gravel_footstep")
 	else
 		bein2playerpos(pos)
 		player:setpos(pos)
-		--s minetest.sound_play("default_sand_footstep")
+		minetest.sound_play("default_sand_footstep")
 	end
 end
 
@@ -283,7 +283,8 @@ minetest.register_entity(m .. "tropfen", {
 		collisionbox = {-cb,-cb,-cb, cb,cb,cb},
 		visual = "sprite",
 		visual_size = {x=1, y=1},
-		textures = {"default_water.png"},
+		textures = {"default_water_flowing_animated.png"},
+		--textures = {"default_water.png"},
 		spritediv = {x=1, y=1},
 		initial_sprite_basepos = {x=0, y=0},
 		is_visible = true,
@@ -301,7 +302,7 @@ minetest.register_entity(m .. "tropfen", {
 		local p = self.object:getpos()
 		local vorschau = .52
 		p.y = p.y - vorschau
-		if minetest.get_node(p).name ~= "air" && minetest.get_item_group(minetest.get_node(p).name, "water") == 0 then
+		if minetest.get_node(p).name ~= "air" and minetest.get_item_group(minetest.get_node(p).name, "water") == 0 then
 			self.object:remove()
 			p.y = p.y + vorschau
 			if  minetest.get_node(p).name ~= "air" then
@@ -311,7 +312,7 @@ minetest.register_entity(m .. "tropfen", {
 				return
 			end
 			minetest.set_node(p, {name="default:water_source"})
-			--s minetest.sound_play("default_break_glass", {pos = pos, gain = 0.3})
+			minetest.sound_play("default_break_glass", {pos = pos, gain = 0.3})
 		end
 	end,
 	on_activate = function(self, staticdata)
@@ -322,6 +323,7 @@ minetest.register_entity(m .. "tropfen", {
 		if not staticdata then
 			self.object:setvelocity({x = 0, y = -5, z = 0})
 		end
+		-- self.object:set_animation({x=1,y=256/16}, 15, 0) 
 	end,
 	get_staticdata = function(self)
 		return minetest.serialize(state)
@@ -349,7 +351,7 @@ local function neues_cloudlet(pos, node, active_object_count, active_object_coun
 	end
 	if minetest.get_node(pos).name ~= "air" then return end
 	minetest.add_entity(pos, m .. "tropfen")
-	--s minetest.sound_play("default_glass_footstep", {pos = pos, gain = 0.5}) 
+	minetest.sound_play("default_glass_footstep", {pos = pos, gain = 0.5}) 
 end
 
 minetest.register_abm({
@@ -368,7 +370,7 @@ local function tropfen(pos, node, active_object_count, active_object_count_wider
 	pos.y = pos.y - 1
 	if minetest.get_node(pos).name == "air" then
 		minetest.add_entity(pos, m .. "tropfen")
-		--s minetest.sound_play("default_glass_footstep", {pos = pos, gain = 0.5})
+		minetest.sound_play("default_glass_footstep", {pos = pos, gain = 0.5})
 	end
 end
 
@@ -450,7 +452,7 @@ end
 --workaround: manchmal sammeln sich watersources nebeneinander, obwohl ich beim setzen die umgebung checke.
 --lösch das
 local function landlose_watersources_loeschen(pos)
-	log_cnt "loeschversuch"
+	--log_cnt "loeschversuch"
 	local p = {y = pos.y}
 	local kontakt = false
 	local dist_wasserhaltig = 0
@@ -480,7 +482,7 @@ local function landlose_watersources_loeschen(pos)
 		end
 	end
 	if kontakt or dist_wasserhaltig == max_dist - 1 then
-		log_stat ("landkontakt", dist_wasserhaltig)
+		--log_stat ("landkontakt", dist_wasserhaltig)
 		return
 	end
 	log_stat ("landlos", dist_wasserhaltig)
