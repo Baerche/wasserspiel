@@ -299,13 +299,11 @@ minetest.register_entity(m .. "tropfen", {
 			self.object:remove()
 		end
 		local p = self.object:getpos()
-		p.y = p.y - .52
-		if minetest.get_node(p).name ~= "air" then
+		local vorschau = .52
+		p.y = p.y - vorschau
+		if minetest.get_node(p).name ~= "air" && minetest.get_item_group(minetest.get_node(p).name, "water") == 0 then
 			self.object:remove()
-			if minetest.get_item_group(minetest.get_node(p).name, "water") > 0 then
-				return
-			end			
-			p.y = p.y + .52
+			p.y = p.y + vorschau
 			if  minetest.get_node(p).name ~= "air" then
 				return
 			end
@@ -359,7 +357,6 @@ minetest.register_abm({
 	neighbors = {"air"},
 	interval = 1,
 	chance = liqfin and 100 or 1000,
-	--chance = liqfin and 100 or 2500,
 	action = neues_cloudlet,
 })
 
@@ -408,6 +405,7 @@ minetest.register_abm({
 	action = erosion,
 })
 
+--nach einer weile sollen die pfützen wieder verschwinden
 local function einzelne_watersources_loeschen(pos, node)
 	if not is_watersource_stabil(pos) then
 		minetest.set_node(pos, {name="air"})
@@ -449,6 +447,8 @@ if liqfin then
 	})
 end
 
+--workaround: manchmal sammeln sich watersources nebeneinander, obwohl ich beim setzen die umgebung checke.
+--lösch das
 local function landlose_watersources_loeschen(pos)
 	log_cnt "loeschversuch"
 	local p = {y = pos.y}

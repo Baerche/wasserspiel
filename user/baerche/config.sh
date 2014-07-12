@@ -1,7 +1,7 @@
 ME=$(git config --get user.name)
 
-WELT=410welt
 WELT=mapgenv7
+WELT=410welt
 
 #xrandr --size 1280x1024
 
@@ -13,7 +13,7 @@ BIN=~/minetest-4.10-git/bin/minetest; MAP_WORLDS=$HOME/.minetest/worlds
 
 CMD="$BIN"
 
-CMD="$BIN --config ../user/$ME/minetest.conf"
-
 CMD="$BIN --config ../user/$ME/minetest.conf --name debugger --password pass --worldname $WELT --go"
+
+CMD="$BIN --config ../user/$ME/minetest.conf"
 
