@@ -1,5 +1,5 @@
 #!/bin/sh
-set -eu
+set -eu -x
 IFS='
 '
 cd $(dirname $0)/../..
@@ -7,21 +7,75 @@ pwd
 
 
 cd downloads
-P=$HOME/.minetest/mods/my_defaultpack
-mkdir -p $P
+MT=$HOME/.minetest/mods
+FM=$HOME/.freeminer/mods
+NUR_MT=$MT/wasserspiel_mtpack
+NUR_FM=$FM/wasserspiel_frpack
+BEIDE=$MT/wasserspiel_mixpack
+NUR_MT_TEST=$MT/wasserspiel_testpack
+
+trash-put $NUR_MT $NUR_FM $BEIDE $NUR_MT_TEST
+mkdir -p $NUR_MT $NUR_FM $BEIDE $NUR_MT_TEST
+trash-put $FM/wasserspiel_mixpack
+ln -s $BEIDE $FM/wasserspiel_mixpack
+echo >$NUR_MT/modpack.txt
+echo >$NUR_FM/modpack.txt
+echo >$BEIDE/modpack.txt
+echo >$NUR_MT_TEST/modpack.txt
 
 
 
-M=mobs
-U=https://github.com/PilzAdam/mobs/zipball/master
+
+M=builtin_item
+U=https://github.com/PilzAdam/${M}/archive/master.zip
+P=$NUR_MT
 Z=$M.zip
-D=PilzAdam-mobs-c49cc47
-wget -c $U -O $Z
+D=${M}-master
+DM=$D #singlemod
+#wget -c $U -O $Z
+#unzip -l $Z; exit
 trash-put $D
 unzip $Z
 trash-put $P/$M
-ln $PWD/$D $P/$M
+ln -s $PWD/$DM $P/$M
 
+
+U=https://github.com/PilzAdam/item_drop/archive/master.zip
+M=item_drop
+P=$NUR_MT
+Z=$M.zip
+D=item_drop-master
+DM=$D #singlemod
+#wget -c $U -O $Z
+#unzip -l $Z; exit
+trash-put $D
+unzip $Z
+trash-put $P/$M
+ln -s $PWD/$DM $P/$M
+
+M=mobs
+U=https://github.com/PilzAdam/mobs/zipball/master
+P=$NUR_MT_TEST
+Z=$M.zip
+D=PilzAdam-mobs-c49cc47
+DM=$D #singlemod
+#wget -c $U -O $Z
+trash-put $D
+unzip $Z
+trash-put $P/$M
+ln -s $PWD/$DM $P/$M
+
+M=ambience
+P=$BEIDE
+U=https://github.com/Neuromancer56/MinetestAmbience/archive/master.zip
+Z=MinetestAmbience.zip
+D=MinetestAmbience-master
+DM=$D/$M #aus modpack
+#wget -c $U -O $Z
+trash-put $D
+unzip $Z
+trash-put $P/$M
+ln -s $PWD/$DM $P/$M
 
 
 exit ### sachen drunter werden irgnoriert weil fertig

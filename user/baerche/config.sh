@@ -2,6 +2,7 @@ ME=$(git config --get user.name)
 
 WELT=mapgenv7
 WELT=410welt
+WELT=mobs
 
 NAME=inspektor
 NAME=debugger
