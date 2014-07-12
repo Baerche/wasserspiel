@@ -150,15 +150,14 @@ local function wasserspiel_info(name, param)
 	info.you = name
 	info.regen = regen
 	info.hoehe = hoehe
-	minetest.chat_send_player(name, dump(info))
-	if dbgr(name) then
-		minetest.chat_send_player(name, dump(logs))
-		print("@" .. name)
-		print(dump(logs))
-		print(dump(info))
-	end
+	info.version = wasserspiel.version
+	local s = dump(info)
+	minetest.chat_send_player(name, s)
+	logs.full_log = {}
+	flog (s)
 end
-minetest.register_chatcommand("ws?", {func = wasserspiel_info})
+minetest.register_chatcommand("ws/info", {func = wasserspiel_info})
+minetest.register_chatcommand("ws/i", {func = wasserspiel_info})
 
 --
 -- rutschen
@@ -187,11 +186,11 @@ local function rutschen(player)
 	local above_dort = minetest.registered_nodes[minetest.get_node(pos).name]
 	pos.y = pos.y - 1
 	if dort.walkable or above_dort.walkable then
-		--s minetest.sound_play("default_gravel_footstep")
+		minetest.sound_play("default_gravel_footstep")
 	else
 		bein2playerpos(pos)
 		player:setpos(pos)
-		--s minetest.sound_play("default_sand_footstep")
+		minetest.sound_play("default_sand_footstep")
 	end
 end
 
@@ -284,7 +283,8 @@ minetest.register_entity(m .. "tropfen", {
 		collisionbox = {-cb,-cb,-cb, cb,cb,cb},
 		visual = "sprite",
 		visual_size = {x=1, y=1},
-		textures = {"default_water.png"},
+		textures = {"default_water_flowing_animated.png"},
+		--textures = {"default_water.png"},
 		spritediv = {x=1, y=1},
 		initial_sprite_basepos = {x=0, y=0},
 		is_visible = true,
@@ -300,13 +300,11 @@ minetest.register_entity(m .. "tropfen", {
 			self.object:remove()
 		end
 		local p = self.object:getpos()
-		p.y = p.y - .52
-		if minetest.get_node(p).name ~= "air" then
+		local vorschau = .52
+		p.y = p.y - vorschau
+		if minetest.get_node(p).name ~= "air" and minetest.get_item_group(minetest.get_node(p).name, "water") == 0 then
 			self.object:remove()
-			if minetest.get_item_group(minetest.get_node(p).name, "water") > 0 then
-				return
-			end			
-			p.y = p.y + .52
+			p.y = p.y + vorschau
 			if  minetest.get_node(p).name ~= "air" then
 				return
 			end
@@ -314,7 +312,7 @@ minetest.register_entity(m .. "tropfen", {
 				return
 			end
 			minetest.set_node(p, {name="default:water_source"})
-			--s minetest.sound_play("default_break_glass", {pos = pos, gain = 0.3})
+			minetest.sound_play("default_break_glass", {pos = pos, gain = 0.3})
 		end
 	end,
 	on_activate = function(self, staticdata)
@@ -325,6 +323,7 @@ minetest.register_entity(m .. "tropfen", {
 		if not staticdata then
 			self.object:setvelocity({x = 0, y = -5, z = 0})
 		end
+		-- self.object:set_animation({x=1,y=256/16}, 15, 0) 
 	end,
 	get_staticdata = function(self)
 		return minetest.serialize(state)
@@ -352,7 +351,7 @@ local function neues_cloudlet(pos, node, active_object_count, active_object_coun
 	end
 	if minetest.get_node(pos).name ~= "air" then return end
 	minetest.add_entity(pos, m .. "tropfen")
-	--s minetest.sound_play("default_glass_footstep", {pos = pos, gain = 0.5}) 
+	minetest.sound_play("default_glass_footstep", {pos = pos, gain = 0.5}) 
 end
 
 minetest.register_abm({
@@ -360,7 +359,6 @@ minetest.register_abm({
 	neighbors = {"air"},
 	interval = 1,
 	chance = liqfin and 100 or 1000,
-	--chance = liqfin and 100 or 2500,
 	action = neues_cloudlet,
 })
 
@@ -372,7 +370,7 @@ local function tropfen(pos, node, active_object_count, active_object_count_wider
 	pos.y = pos.y - 1
 	if minetest.get_node(pos).name == "air" then
 		minetest.add_entity(pos, m .. "tropfen")
-		--s minetest.sound_play("default_glass_footstep", {pos = pos, gain = 0.5})
+		minetest.sound_play("default_glass_footstep", {pos = pos, gain = 0.5})
 	end
 end
 
@@ -409,6 +407,7 @@ minetest.register_abm({
 	action = erosion,
 })
 
+--nach einer weile sollen die pfützen wieder verschwinden
 local function einzelne_watersources_loeschen(pos, node)
 	if not is_watersource_stabil(pos) then
 		minetest.set_node(pos, {name="air"})
@@ -450,7 +449,10 @@ if liqfin then
 	})
 end
 
+--workaround: manchmal sammeln sich watersources nebeneinander, obwohl ich beim setzen die umgebung checke.
+--lösch das
 local function landlose_watersources_loeschen(pos)
+	--log_cnt "loeschversuch"
 	local p = {y = pos.y}
 	local kontakt = false
 	local dist_wasserhaltig = 0
@@ -479,8 +481,8 @@ local function landlose_watersources_loeschen(pos)
 			break
 		end
 	end
-	if kontakt or dist_wasserhaltig == max_dist then
-		log_stat ("landkontakt", dist_wasserhaltig)
+	if kontakt or dist_wasserhaltig == max_dist - 1 then
+		--log_stat ("landkontakt", dist_wasserhaltig)
 		return
 	end
 	log_stat ("landlos", dist_wasserhaltig)
@@ -547,9 +549,7 @@ local function regenstaerke_setzen(name, param)
 		minetest.chat_send_player(name, dump(logs.t0))
 	end
 	
-minetest.register_chatcommand("rain", {
-	func = regenstaerke_setzen
-})
+minetest.register_chatcommand("ws/rain", {func = regenstaerke_setzen})
 
 local function gib_fehlendes(player, liste)
 	local iv = player:get_inventory()
@@ -609,10 +609,9 @@ local function step()
 	
 	if dbg then
 		
-		print_log(""
-			.. " GEZAEHLT " .. dump(logs.gezaehlt)
-			.. " STATS " .. dump(logs.stats)
-		)
+		if next(logs.full_log) ~= nil then print_log("LOG " .. dump(logs.full_log)) end
+		if next(logs.gezaehlt) ~= nil then print_log("GEZAEHLT " .. dump(logs.gezaehlt)) end
+		if next(logs.stats) ~= nil then print_log("STATS " .. dump(logs.stats)) end
 
 	end
 	clear_logs()
