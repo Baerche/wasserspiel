@@ -1,47 +1,49 @@
-wasserspiel
-===========
+#Wasserspiel
+
+##Wozu?
+
+#water game
+
+##What for?
+
+---
+
+Eine leere harmlose Welt ist langweilig. Mobs waren mir zu schwierig. Und mein Hund schaut immer so besorgt wenn er das die Sterbetöne in Spielen hört. Ausserdem, dies ist ein Bauspiel. Und warum baut man? Richtig, weil sonst wird man pitschnass. Und dann hatte ich eine Idee :-)
+
+An empty harmless world is boring. Mobs were too difficult. And my dog always looks so worried when he hears the sounds of death in games. Moreover, this is a building game. And why do you build? Right, because otherwise you will get soaking wet. And then I had an idea :-)
+
+---
+
+Wenn man Minetest-wasser in die Luft setzt, fällt es vielleicht irgendwie runter? Tat es dann auch, nach etwas überreden. Nachdem ich es schön für endliche Flüssigkeit abgestimmt hatte, kam version 4.10, und die hatte es nicht mehr. Na gut. Mittlerweile kann Wasserspiel folgendes:
+
+If you set mine test water in the air, it might somehow falls down? Indeed, it did, after some persuasion. After I had it nicely tuned for finite liquid came version 4.10 and it no longer had it. Oh well. Meanwhile, watergame can the following:
+
+---
+
+Regentropfen fallenlassen und aufplatschen und Pfützen bilden. Na gut, die Wassertropfen sind halb so gross wie man selbst, deswegen empfehle ich als Ameise zu spielen. Also nicht F7 drücken, sonst ist die Illusion weg.
+
+Drop raindrops and splashing and form puddles. Well, the water droplets are half as large as oneself, that's why I recommend to play as ant. So do not press F7, otherwise the illusion is gone.
+
+---
+
+Ausrutschen. Das ist richtig cool und macht wahnsinnig. Wenn man in einer Pfütze steht rutscht man alle paar Sekunden auf das nächste Feld. Und verliert den Focus, gerade wenn man noch einen Moment länger an einem Block herumhacken muss. Also sorgt man besser für ein Dach oder eine rutschfeste Unterlage, oder geht nachts ins Bett.
+
+Slipping. This is really cool and drives mad. When you are standing in a puddle you slip every few seconds to the next field. And loses the focus, especially if you have to pick on one moment at a block. So better provide for a roof or a non-slip base, or go to bed at night.
+
+---
+
+Wechselnden Regen. Der orientiert sich nicht an der Uhrzeit, sondern am Licht. Mehr Dunkel mehr nass. Ich hatte gehofft das das Dämmern durch Wolken auch mehr Regen erzeugt, aber leider nicht. Dafür regnet es kräftig in grossen Höhlen.
+
+missing
+
+---
+
+Ertrinken. Na gut, das ist nicht von mir. Aber ganz praktisch wenn man in eine 2 Blocks hohe Grube rutscht oder direkt neben einem Baum einschläft.
+
+missing
+
+---
 
 
-A survival mod for minetest
----------------------------
-Imagine you are the size of an ant.
-Add rain and a bit erosion.
-Try not to drown, build clever.
 
-
-Installation
-------------
-Download zip and
-* rename it from wasserspiel-master to wasserspiel
-* or take the wasserspiel_base folder
-
-Then put it in your mods folder.
-
-
-Suggested mods
---------------
-
-* Ambience : very important for splashing walk :-)
-* item_drop, buildin_item : makes drops drop and drift away.
-
-
-Settings ingame
----------------
-
-* /rain -1 : rain changes automatically, more when dark
-* /rain 0 : no more rain
-* /rain n : constant rain, n=1 max, higher -> less rain
-* /rain n,h : second number -> extra high of rain
-* /rain : show rainsettings in chat
-
-
-Settings in gamepanel
----------------------
-finite liquid changes water behavior, cant change that per world
-
-* off and /rain 1 : you drown in the rain, but it helps climbing.
-Also called cloudinvaders.
-* on and /rain 1 : you drown in the puddles, after a while. 
-* off and /rain -1 : booring.
-* on and /rain -1 : build irrigation channels. Make the desert green.
 
