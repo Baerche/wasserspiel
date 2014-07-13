@@ -337,6 +337,8 @@ end
 
 
 local function neues_cloudlet(pos, node, active_object_count, active_object_count_wider)
+	log_cnt "versuche"
+	--log_stat ("drumrum",active_object_count)
 	if objekt_platz_voll(active_object_count) then return end 
 	-- -1 macht regenstärke lichtabhängig, 1.. ist immer an per zufall, 0 aus
 	if regen == 0 or regen > 1 and math.random(regen) > 1 then return end
@@ -350,6 +352,7 @@ local function neues_cloudlet(pos, node, active_object_count, active_object_coun
 		if r > 1 then return end
 	end
 	if minetest.get_node(pos).name ~= "air" then return end
+	log_cnt "neue"
 	minetest.add_entity(pos, m .. "tropfen")
 	minetest.sound_play("default_glass_footstep", {pos = pos, gain = 0.5}) 
 end
@@ -357,8 +360,10 @@ end
 minetest.register_abm({
 	nodenames = {"group:crumbly", "group:cracky", "group:snappy", "group:oddly_breakable_by_hand"},
 	neighbors = {"air"},
-	interval = 1,
-	chance = liqfin and 100 or 1000,
+	interval = 3,
+	chance = liqfin and 4 or 1000,
+	--interval = 1,
+	--chance = liqfin and 100 or 1000,
 	action = neues_cloudlet,
 })
 
@@ -383,6 +388,7 @@ minetest.register_abm({
 })
 
 local function erosion (pos, node)
+	log_cnt "eroding?"
 	p.x = pos.x + math.random(-1,1)
 	p.y = pos.y + math.random(-1,0)
 	p.z = pos.z + math.random(-1,1)
@@ -391,6 +397,7 @@ local function erosion (pos, node)
 		local n = minetest.get_node(pos).name
 		pos.y = pos.y - 1
 		if minetest.get_item_group(n, "flora") == 0 then
+			log_cnt "eroding"
 			-- TODO meta-inf und so fehlt.
 			local o = minetest.get_node(p)
 			minetest.set_node(p, minetest.get_node(pos))
@@ -399,12 +406,14 @@ local function erosion (pos, node)
 	end
 end
 
-if not freeminer then -- hat eigene
+if true or not is_freeminer then -- hat eigene
 	minetest.register_abm({
 		nodenames =  {"group:crumbly"},
 		neighbors = {"default:water_flowing"},
-		interval = 1,
-		chance = 1000,
+		interval = liqfin and 1 or 1,
+		chance = liqfin and 1 or 1000,
+		--interval = 1,
+		--chance = 1000,
 		action = erosion,
 	})
 end
