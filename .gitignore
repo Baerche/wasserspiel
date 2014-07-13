@@ -10,3 +10,6 @@ scratch*
 screenshot_*
 debug.txt
 *-freeminer.conf
+/t/
+/*.zip
+/version.txt

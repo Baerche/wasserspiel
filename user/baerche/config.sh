@@ -1,4 +1,5 @@
 ME=$(git config --get user.name)
+REPO=https://github.com/Baerche/wasserspiel.git
 
 WELT=mapgenv7
 WELT=mobs
