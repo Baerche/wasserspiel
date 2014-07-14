@@ -19,3 +19,4 @@ fullscreen = false
 enable_shaders = false
 #
 
+mg_name = v6

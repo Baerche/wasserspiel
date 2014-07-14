@@ -296,13 +296,18 @@ minetest.register_entity(m .. "tropfen", {
 	on_step = function(self, dtime)
 		self.state.alter = self.state.alter + dtime
 		if self.state.alter > 60 then
-			flog("Zu alt " .. dump({self.object:getpos(), self.state}))
+			--flog("Zu alt " .. dump({self.object:getpos(), self.state}))
 			self.object:remove()
 		end
 		local p = self.object:getpos()
 		local vorschau = .52
 		p.y = p.y - vorschau
 		if minetest.get_node(p).name ~= "air" and minetest.get_item_group(minetest.get_node(p).name, "water") == 0 then
+			log_cnt "platsch"
+			--local s = "Splash" --mit ambience
+			local s = "tnt_ignite"
+			minetest.sound_play(s, {pos = pos, gain = 0.3})
+			--minetest.sound_play(s, {pos = pos, length=3}) 
 			self.object:remove()
 			p.y = p.y + vorschau
 			if  minetest.get_node(p).name ~= "air" then
@@ -312,7 +317,6 @@ minetest.register_entity(m .. "tropfen", {
 				return
 			end
 			minetest.set_node(p, {name="default:water_source"})
-			minetest.sound_play("default_break_glass", {pos = pos, gain = 0.3})
 		end
 	end,
 	on_activate = function(self, staticdata)
@@ -354,7 +358,6 @@ local function neues_cloudlet(pos, node, active_object_count, active_object_coun
 	if minetest.get_node(pos).name ~= "air" then return end
 	log_cnt "neue"
 	minetest.add_entity(pos, m .. "tropfen")
-	minetest.sound_play("default_glass_footstep", {pos = pos, gain = 0.5}) 
 end
 
 minetest.register_abm({
@@ -375,7 +378,6 @@ local function tropfen(pos, node, active_object_count, active_object_count_wider
 	pos.y = pos.y - 1
 	if minetest.get_node(pos).name == "air" then
 		minetest.add_entity(pos, m .. "tropfen")
-		minetest.sound_play("default_glass_footstep", {pos = pos, gain = 0.5})
 	end
 end
 
@@ -572,8 +574,10 @@ local function gib_fehlendes(player, liste)
 end
 
 local standard_inventory = {
-	"default:torch 4", "default:pick_stone", "default:apple 4",
-	"default:ladder 4",
+	"default:torch 4", "default:ladder 4",
+	"default:pick_stone", m .. "cloudlet",
+	"default:apple 4",
+	
 }
 
 local function hello(player)
@@ -631,6 +635,9 @@ step()
 
 -- sollte extra mod sein, war gerade neugierig
 if false and dbg then
+	for i,v in pairs(minetest) do
+		print(i)
+	end
 	minetest.after(1, function()
 		for i,v in pairs(minetest.registered_craftitems) do
 			print(v.name)

@@ -1,4 +1,6 @@
 licht normal 15, unter baum 12
 time 5000 3, 6000 11
 
+freeminer-commits
 4140637a68e357f9724c6a707d57d1182683c69b freeminer speichern geht spawn per /home
+commit f5763160eb85703ae804a23f8dc3f85423a7904f ok ausser userspeichern

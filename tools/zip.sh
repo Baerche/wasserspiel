@@ -1,18 +1,18 @@
 #!/bin/sh
-set -eu
+set -eux
 IFS='
 '
 cd $(dirname $0)/..
 . user/$(git config --get user.name)/config.sh
 
 W=wasserspiel
-Z=$PWD/$W.zip
+Z=$PWD/$W.wiki/$W.zip
 
 #git remote add origin $REPO
 git remote -v | grep fetch
 
 git remote -v | grep fetch >version.txt
-git log -1 --name-status >>version.txt
+git log -1 >>version.txt
 
 # hackerei um den mod-namen als directory zu kriegen
 mkdir -p t

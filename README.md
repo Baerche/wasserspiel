@@ -1,5 +1,9 @@
 #*De: Wasserspiel*
 #*En:* water game
+
+#Links
+Downloads: <https://github.com/Baerche/wasserspiel/wiki>
+
 ##*De: Wozu?*
 ##*En:* What for?
 
