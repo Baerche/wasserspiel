@@ -19,4 +19,8 @@ fullscreen = false
 enable_shaders = false
 #
 
+#dschungel
 mg_name = v6
+mgv6_spflags = jungles, biomeblend, mudflow
+mg_flags = trees, caves, dungeons, noflat, light
+#

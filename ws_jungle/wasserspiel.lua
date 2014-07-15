@@ -221,7 +221,6 @@ local function cloudlet_info(itemstack, player, ps)
 	local p = beinpos(player)
 	log_to (player, table.concat ({
 		"HIT: " .. (ps.under and minetest.get_node(ps.under).name or "nix"),
-		"GROUPS: " .. (ps.under and dump(minetest.registered_nodes[minetest.get_node(ps.under).name].groups)),
 		"ABOVE: " .. (ps.above and minetest.get_node(ps.above).name or "nix"),
 		"INV#1: " .. player:get_inventory():get_stack("main", 1):to_string(),
 		"LEGS: " .. minetest.get_node(beinpos(player)).name,
@@ -581,6 +580,7 @@ local standard_inventory = {
 	"default:torch 4", "default:ladder 4",
 	"default:pick_stone", m .. "cloudlet",
 	"default:apple 4",
+	
 }
 
 local function hello(player)

@@ -21,7 +21,7 @@ ln -s $PWD t/wasserspiel
 cd t
 #zip --help
 trash-put $Z
-zip -r $Z   $W/*.lua $W/ws_*    $W/*.md $W/version.txt 
+zip -r $Z   $W/*.lua $W/ws_*    $W/*.md $W/version.txt  $W/LICENSE
 cd -
 
 cat version.txt
