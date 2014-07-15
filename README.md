@@ -5,6 +5,25 @@ Experimental Download: <https://github.com/Baerche/wasserspiel/wiki>
 
 ##What for? ** Wozu?*
 
+###Background Story ** Hintergrund
+
+** 
+Bisher habe ich in einer wunderbaren Welt gelebt. Wunderbares Wetter, Kraft und Gesundheit. Intelektuelle Herausforderungen, die meinen Neigungen entsprechen (Daa! Saandkiste!!1!). Ich habe viele Häuser gebaut, Bäche gegraben und Quellen angelegt. Früher war es etwas schwieriger. Da waren die Nächte so dunkel, das man unbedingt für lichtsorgen muste, oder warten. Und die Höhlen auch, aber da nützte warten nichts. Dann hat die fliegende Ameise Licht und Dunkelheit nicht mehr so streng getrennt, und nun sind die Nächte wunderbar. Aber inzwischen irgendwie langweilig.
+
+Dann kam der Regen. Manche sagen es war der Ameisenbär. War dem auch langweilig? Die Nächte sind immer noch erträglich. Wenn man gerne watet.  Überall wird es nass und glitschig. Mächige Nodegrosse Wassertropfen fallen vom Himmel und im Nu bilden sich grosse Pfützen. Und in denen rutscht man immer aus. Auf sechs Beinen kommt man natürlich überall hin. Nur das stehenbleiben.. Eine Ameise schwimmt ja vorzüglich. Auch wenn sie nicht will... Dauernd rutscht man weg und fängt sich einen Node später, gerade wenn man fast ein Stück Holz abgeknabbert hat. Wenn man neben einem Baum oder Felsen steht: Prinzip Regenrinne. Es gurgelt und man kriegt keine Luft mehr. Und rutscht weg. Dumm ist es wenn man in eine tiefe Pfütze fällt. Zwei Nodes tief und vergessen zu schwimmen, weil man sich gerade in der Realen Virtualität aufhält und Kaffee kocht? Tja, Pech :-(
+
+Nun, eine Ameise schwimmt nicht nur vorzüglich, sie baut auch. Und Wasser fällt von oben nach unten, aber nicht zur Seite. Unter einem Dach ist es sicher. Solange das Dach nicht undicht ist und das Wasser hinein und zur Seite fliest. Dann rutscht man wieder herum, und wenn man Pech hat, raus. Ausserdem ist ein Haus wie eine Grube und da drin wird das Wasser schnell tief...
+
+Mit der Zeit fanden wir heraus, das uns die fliegende Ameise wohl doch nicht so alleine gelassen hat. Einige Pflanzen scheinen auf unserer Seite. Sie haben Kräfte entwickelt, die Feuer unter Wasser brennen lassen und dabei Luft produzieren. Ja, daneben kann man atmen! An Blumen und Gras kann man sich festkrallen. Ameisenklauen machen das automatisch.  Allerdings staut sich darüber gerne das Wasser und man ertrinkt... Manche Pflanzen binden Erde, die sonst vom Wasser vertrieben wird.
+
+Ausserdem fanden wir den Dschungel. Dort regnet es am Tag und die Nächte sind angenehm. Aber die Erde mag das Wasser auch nicht und gleitet schnell davon. Sehr anstrengend mit all den Löchern. Aber wir lernen.
+
+Dann schuf der Ameisenbär den Freeminer und der nahm den Pflanzen die Kräfte. Überall totes Gras. Doch die Ameise schwächte dafür das Wasser. Aber das ist eine spätere Geschichte.
+
+*
+
+###Features
+
 An empty harmless world is boring. Building mobs was too difficult. And my dog always looks so worried when he hears the sounds of death in games. Moreover, this is a building game. And why do you build? Right, because otherwise you will get soaking wet. And then I had an idea :-)
 ** Eine leere harmlose Welt ist langweilig. Mobs bauen war mir zu schwierig. Und mein Hund schaut immer so besorgt wenn er das die Sterbetöne in Spielen hört. Ausserdem, dies ist ein Bauspiel. Und warum baut man? Richtig, weil sonst wird man pitschnass. Und dann hatte ich eine Idee :-)*
 
@@ -31,12 +50,21 @@ Meanwhile, watergame can do the following: ** Mittlerweile kann Wasserspiel folg
 ** Erosion. So in etwa. In der Nähe von Wasser rutscht Erde manchmal zur Seite oder nach unten. Oder in den Kanal den man gerade gegraben hat. Sand und so auch.*
 
 
----
 
 ## Manual
+
+###Warnings
+
+* no warranties. When you code, you know the quirks and avoid them /uncon?/unbewusst/. May break with other users/machines.
+* Only played single user.
+* Consumes more bandwith because of more changing nodes.
+* No /?/rechte/, anyone can change rain and gamemode.
+
 ### Installation
 
-Either you know know how to do it with github, or you go to <https://github.com/Baerche/wasserspiel/wiki> and download the zip. That does not include the nasty "-master" in the name. just put it in mods folder. (Once tried to upload to the library but it did not like me)
+Either you know know how to do it with github, or you go to <https://github.com/Baerche/wasserspiel/wiki> and download the zip. The unzipped directory does not include the nasty "-master" in the name. just put it in mods folder.
+
+Once tried to upload to the library but it did not like me.
 
 ###Configuration
 Currently through chat. Commands begin with /ws/ for /wasserspiel/ . 
@@ -56,6 +84,14 @@ Currently through chat. Commands begin with /ws/ for /wasserspiel/ .
  * default: Used for hours of play in dev before updating.
  * jungle: Harder, more fun. It now rains heavily when bright, with cozy nights to relax. And erosion is much faster, do not mine in dirt :-)
  * kristalltuerme (kristall towers). Oder version before i mastered objects. Looks like skyscrapers popping up. May no longer be compatible.
+ 
+###Suggested Extensions
+
+* ambience: thats immersive sound. And adds usefull sounds wenn being in water :-)
+* builtin_items, itemdrop: force to walk thru water, more slipping :-)
+* TODO: there where some plants usefull for climbing. Too easy, but fun.
+
+
 
 ##Three sorts of water...
 
@@ -65,4 +101,9 @@ There are three sorts of water in minetest/freeminer. Which are choosen globally
 * 4.9 had an early try of realistic finity, which somehow got removed.  Sadly gone. With wasserspiel-rain land got quickly flooded, so i wrote evaporation. After some balance land flooded 2 nodes high which got away in the morning. /?/Ausser wenn es gestaut wurde/.
 * freeminer tries relistic liquid. The 4.9-finite code works, but somehow produces much less water.
 
+
+
+##TODO
+
+* learn about this map-noise-thing for rain volume
 
