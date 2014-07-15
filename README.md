@@ -1,11 +1,11 @@
-Watergame ** Wasserspiel* 
+#Watergame // *Wasserspiel* 
 
-#Links
+##Links
 Experimental Download: <https://github.com/Baerche/wasserspiel/wiki>
 
-##What for? ** Wozu?*
+##What for? // *Wozu?*
 
-###Background Story ** Hintergrund
+###Background Story / *Hintergrund*
 
 So far I have been living in a wonderful world. Wonderful weather, strength and health. Intellectual challenges that match my inclinations (Theere! Saandbox!!1!). I have built many houses, dug streams and created sources. Earlier it was a bit difficult. Since the nights were so dark that one was forced to provide light, or wait. And the caves were dark too, but there waiting did not help. Then the flying ant loosened the seperation of light and darkness, and now the nights are wonderful. But now somehow boring.
 
@@ -19,7 +19,8 @@ In addition, we found the jungle. There it is raining on the day and the nights 
 
 Then the anteater created the Freeminer and took this forces of plants away. Everywhere dead grass. In return the flying ant weakened the water. But that is a later story.
 
-** 
+// <i>
+
 Bisher habe ich in einer wunderbaren Welt gelebt. Wunderbares Wetter, Kraft und Gesundheit. Intelektuelle Herausforderungen, die meinen Neigungen entsprechen (Daa! Saandkiste!!1!). Ich habe viele Häuser gebaut, Bäche gegraben und Quellen angelegt. Früher war es etwas schwieriger. Da waren die Nächte so dunkel, das man unbedingt für licht sorgen muste, oder warten. Und die Höhlen auch, aber da nützte warten nichts. Dann hat die fliegende Ameise Licht und Dunkelheit nicht mehr so streng getrennt, und nun sind die Nächte wunderbar. Aber inzwischen irgendwie langweilig.
 
 Dann kam der Regen. Manche sagen es war der Ameisenbär. War dem auch langweilig? Die Nächte sind immer noch erträglich. Wenn man gerne watet.  Überall wird es nass und glitschig. Mächige Nodegrosse Wassertropfen fallen vom Himmel und im Nu bilden sich grosse Pfützen. Und in denen rutscht man immer aus. Auf sechs Beinen kommt man natürlich überall hin. Nur das stehenbleiben.. Eine Ameise schwimmt ja vorzüglich. Auch wenn sie nicht will... Dauernd rutscht man weg und fängt sich einen Node später, gerade wenn man fast ein Stück Holz abgeknabbert hat. Wenn man neben einem Baum oder Felsen steht: Prinzip Regenrinne. Es gurgelt und man kriegt keine Luft mehr. Und rutscht weg. Dumm ist es wenn man in eine tiefe Pfütze fällt. Zwei Nodes tief und vergessen zu schwimmen, weil man sich gerade in der Realen Virtualität aufhält und Kaffee kocht? Tja, Pech :-(
@@ -32,34 +33,35 @@ Ausserdem fanden wir den Dschungel. Dort regnet es am Tag und die Nächte sind a
 
 Dann schuf der Ameisenbär den Freeminer und der nahm den Pflanzen die Kräfte. Überall totes Gras. Doch die fliegende Ameise schwächte dafür das Wasser. Aber das ist eine spätere Geschichte.
 
-*
+</i>
 
 ###Features
 
 An empty harmless world is boring. Building mobs was too difficult. And my dog always looks so worried when he hears the sounds of death in games. Moreover, this is a building game. And why do you build? Right, because otherwise you will get soaking wet. And then I had an idea :-)
-** Eine leere harmlose Welt ist langweilig. Mobs bauen war mir zu schwierig. Und mein Hund schaut immer so besorgt wenn er das die Sterbetöne in Spielen hört. Ausserdem, dies ist ein Bauspiel. Und warum baut man? Richtig, weil sonst wird man pitschnass. Und dann hatte ich eine Idee :-)*
+// *Eine leere harmlose Welt ist langweilig. Mobs bauen war mir zu schwierig. Und mein Hund schaut immer so besorgt wenn er das die Sterbetöne in Spielen hört. Ausserdem, dies ist ein Bauspiel. Und warum baut man? Richtig, weil sonst wird man pitschnass. Und dann hatte ich eine Idee :-)*
 
 If you set mine test water in the air, it might somehow fall down? Indeed, it did, after some persuasion. After I had it nicely tuned for finite liquid came version 4.10 and it no longer had it. Oh well.
-** Wenn man Minetest-wasser in die Luft setzt, fällt es vielleicht irgendwie runter? Tat es dann auch, nach etwas überreden. Nachdem ich es schön für endliche Flüssigkeit abgestimmt hatte, kam version 4.10, und die hatte es nicht mehr. Na gut.*
+// *Wenn man Minetest-wasser in die Luft setzt, fällt es vielleicht irgendwie runter? Tat es dann auch, nach etwas überreden. Nachdem ich es schön für endliche Flüssigkeit abgestimmt hatte, kam version 4.10, und die hatte es nicht mehr. Na gut.*
 
-Meanwhile, watergame can do the following: ** Mittlerweile kann Wasserspiel folgendes:*
+Meanwhile, watergame can do the following: // *Mittlerweile kann Wasserspiel folgendes:*
 
 * Drop raindrops and splashing and form puddles. Well, the water droplets are half as large as oneself, that's why I recommend to play as ant. So do not press F7, otherwise the illusion is gone :-)
-** Regentropfen fallenlassen und aufplatschen und Pfützen bilden. Na gut, die Wassertropfen sind halb so gross wie man selbst, deswegen empfehle ich als Ameise zu spielen. Also nicht F7 drücken, sonst ist die Illusion weg :-) *
+// *Regentropfen fallenlassen und aufplatschen und Pfützen bilden. Na gut, die Wassertropfen sind halb so gross wie man selbst, deswegen empfehle ich als Ameise zu spielen. Also nicht F7 drücken, sonst ist die Illusion weg :-) *
 
 * Slipping. This is really cool and drives mad. When you are standing in a puddle you slip every few seconds to the next field. And lose the focus, just when you still have to hack a bit longer. So better provide for a roof or a non-slip base, or go to bed at night :-)
-** Ausrutschen. Das ist richtig cool und macht wahnsinnig. Wenn man in einer Pfütze steht rutscht man alle paar Sekunden auf das nächste Feld. Und verliert den Focus, gerade wenn man noch einen Moment länger hacken muss. Also sorgt man besser für ein Dach oder eine rutschfeste Unterlage, oder geht nachts ins Bett :-) *
+// *Ausrutschen. Das ist richtig cool und macht wahnsinnig. Wenn man in einer Pfütze steht rutscht man alle paar Sekunden auf das nächste Feld. Und verliert den Focus, gerade wenn man noch einen Moment länger hacken muss. Also sorgt man besser für ein Dach oder eine rutschfeste Unterlage, oder geht nachts ins Bett :-) *
 
-* Changing rain. It is not oriented at the position, but based on light. More darkness, more wet. I had hoped that the dawning through clouds produced more rain, but unfortunately not. Instead, it is raining heavily in large caves. ** Wechselnden Regen. Der orientiert sich nicht an der Uhrzeit, sondern am Licht. Mehr Dunkelheit, mehr nass. Ich hatte gehofft das das Dämmern durch Wolken auch mehr Regen erzeugt, aber leider nicht. Dafür regnet es kräftig in grossen Höhlen. :-) *
+* Changing rain. It is not oriented at the position, but based on light. More darkness, more wet. I had hoped that the dawning through clouds produced more rain, but unfortunately not. Instead, it is raining heavily in large caves.
+// *Wechselnden Regen. Der orientiert sich nicht an der Uhrzeit, sondern am Licht. Mehr Dunkelheit, mehr nass. Ich hatte gehofft das das Dämmern durch Wolken auch mehr Regen erzeugt, aber leider nicht. Dafür regnet es kräftig in grossen Höhlen. :-) *
 
 * Drowning. Well, that's not mine. But handy with slipping when you slip into a 2 blocks high pit or fall asleep next to a tree.
-** Ertrinken. Na gut, das ist nicht von mir. Aber ganz praktisch wenn man in eine 2 Blocks hohe Grube rutscht oder direkt neben einem Baum einschläft. :-) *
+// *Ertrinken. Na gut, das ist nicht von mir. Aber ganz praktisch wenn man in eine 2 Blocks hohe Grube rutscht oder direkt neben einem Baum einschläft. :-) *
 
 * Drops in caves. For the case that they are not so high. Happened only below raw rock. What would a miner do?
-** Tropfen in Höhlen. Für den Fall das die nicht so hoch sind. Passiert nur unter rohem Felsen. Was würde ein Miner da tun?*
+// *Tropfen in Höhlen. Für den Fall das die nicht so hoch sind. Passiert nur unter rohem Felsen. Was würde ein Miner da tun?*
 
 * Erosion. Something like that. In the vicinity of water earth slips sometimes to the side or down. Or in the channel's you just had dug. Sand and so does too.
-** Erosion. So in etwa. In der Nähe von Wasser rutscht Erde manchmal zur Seite oder nach unten. Oder in den Kanal den man gerade gegraben hat. Sand und so auch.*
+// *Erosion. So in etwa. In der Nähe von Wasser rutscht Erde manchmal zur Seite oder nach unten. Oder in den Kanal den man gerade gegraben hat. Sand und so auch.*
 
 
 
