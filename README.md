@@ -46,16 +46,16 @@ If you set mine test water in the air, it might somehow fall down? Indeed, it di
 Meanwhile, watergame can do the following: // *Mittlerweile kann Wasserspiel folgendes:*
 
 * Drop raindrops and splashing and form puddles. Well, the water droplets are half as large as oneself, that's why I recommend to play as ant. So do not press F7, otherwise the illusion is gone :-)
-// *Regentropfen fallenlassen und aufplatschen und Pfützen bilden. Na gut, die Wassertropfen sind halb so gross wie man selbst, deswegen empfehle ich als Ameise zu spielen. Also nicht F7 drücken, sonst ist die Illusion weg :-) *
+// *Regentropfen fallenlassen und aufplatschen und Pfützen bilden. Na gut, die Wassertropfen sind halb so gross wie man selbst, deswegen empfehle ich als Ameise zu spielen. Also nicht F7 drücken, sonst ist die Illusion weg :-)*
 
 * Slipping. This is really cool and drives mad. When you are standing in a puddle you slip every few seconds to the next field. And lose the focus, just when you still have to hack a bit longer. So better provide for a roof or a non-slip base, or go to bed at night :-)
-// *Ausrutschen. Das ist richtig cool und macht wahnsinnig. Wenn man in einer Pfütze steht rutscht man alle paar Sekunden auf das nächste Feld. Und verliert den Focus, gerade wenn man noch einen Moment länger hacken muss. Also sorgt man besser für ein Dach oder eine rutschfeste Unterlage, oder geht nachts ins Bett :-) *
+// *Ausrutschen. Das ist richtig cool und macht wahnsinnig. Wenn man in einer Pfütze steht rutscht man alle paar Sekunden auf das nächste Feld. Und verliert den Focus, gerade wenn man noch einen Moment länger hacken muss. Also sorgt man besser für ein Dach oder eine rutschfeste Unterlage, oder geht nachts ins Bett :-)*
 
-* Changing rain. It is not oriented at the position, but based on light. More darkness, more wet. I had hoped that the dawning through clouds produced more rain, but unfortunately not. Instead, it is raining heavily in large caves.
-// *Wechselnden Regen. Der orientiert sich nicht an der Uhrzeit, sondern am Licht. Mehr Dunkelheit, mehr nass. Ich hatte gehofft das das Dämmern durch Wolken auch mehr Regen erzeugt, aber leider nicht. Dafür regnet es kräftig in grossen Höhlen. :-) *
+* Changing rain. It is not oriented at the position, but based on light. More darkness, more wet. I had hoped that the dawning through clouds produced more rain, but unfortunately not. Instead, it is raining heavily in large caves :-)
+// *Wechselnden Regen. Der orientiert sich nicht an der Uhrzeit, sondern am Licht. Mehr Dunkelheit, mehr nass. Ich hatte gehofft das das Dämmern durch Wolken auch mehr Regen erzeugt, aber leider nicht. Dafür regnet es kräftig in grossen Höhlen. :-)*
 
-* Drowning. Well, that's not mine. But handy with slipping when you slip into a 2 blocks high pit or fall asleep next to a tree.
-// *Ertrinken. Na gut, das ist nicht von mir. Aber ganz praktisch wenn man in eine 2 Blocks hohe Grube rutscht oder direkt neben einem Baum einschläft. :-) *
+* Drowning. Well, that's not mine. But handy with slipping when you slip into a 2 blocks high pit or fall asleep next to a tree. :-)
+// *Ertrinken. Na gut, das ist nicht von mir. Aber ganz praktisch wenn man in eine 2 Blocks hohe Grube rutscht oder direkt neben einem Baum einschläft. :-)*
 
 * Drops in caves. For the case that they are not so high. Happened only below raw rock. What would a miner do?
 // *Tropfen in Höhlen. Für den Fall das die nicht so hoch sind. Passiert nur unter rohem Felsen. Was würde ein Miner da tun?*
