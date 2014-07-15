@@ -7,8 +7,20 @@ Experimental Download: <https://github.com/Baerche/wasserspiel/wiki>
 
 ###Background Story ** Hintergrund
 
+So far I have been living in a wonderful world. Wonderful weather, strength and health. Intellectual challenges that match my inclinations (Theere! Saandbox!!1!). I have built many houses, dug streams and created sources. Earlier it was a bit difficult. Since the nights were so dark that one was forced to provide light, or wait. And the caves were dark too, but there waiting did not help. Then the flying ant loosened the seperation of light and darkness, and now the nights are wonderful. But now somehow boring.
+
+Then came the rain. Some say it was the anteater. Was he too bored? The nights are still bearable. If you like to wade.  Everywhere it is wet and slippery. Powerfull nodesized drops of water falling from the sky and in an instant to large puddles. In which one always slips out. On six legs, of course, you can go anywhere Only to stand firmly ... An ant swims so excellent. Even if we do not want ... Constantly slipping away and catching yourself a node later, especially if you have almost nibbled a piece of wood. When you are standing next to a tree or rock: Principle rain gutter. It gurgles and you get no more air. And slip away. Too bad it is when you fall into a deep puddle. Two nodes deep and forgotten to swim, because you just happen to be in the real virtuality, making coffee? Well, bad luck :-(
+
+Well, an ant floats not only exquisite, it also builds. And water falls from top to bottom, but not to the side. Under one roof, it is safe. As long as the roof is not leaking and the water can not flow in and then to the sides. Then you slide back around, and if you're unlucky, get out of the house. In addition, a home is like a pit and inside the water is deep quickly ...
+
+By the time we found out that the flying ant probably has not left us completely alone. Some plants appear to be on our site. They have developed forces that let fire burn under water, while producing air. Yes, beside you can breathe! On flowers and grass you can cling to, no slipping. Ants claws do that automatically.  However, the water likes to dam above and you drown ... Some plants bind soil that is otherwise driven away by water.
+
+In addition, we found the jungle. There it is raining on the day and the nights are pleasant. But the earth also does not like the water and is slipping away fast. Very tiring, with all the holes. But we learn.
+
+Then the anteater created the Freeminer and took this forces of plants away. Everywhere dead grass. In return the flying ant weakened the water. But that is a later story.
+
 ** 
-Bisher habe ich in einer wunderbaren Welt gelebt. Wunderbares Wetter, Kraft und Gesundheit. Intelektuelle Herausforderungen, die meinen Neigungen entsprechen (Daa! Saandkiste!!1!). Ich habe viele Häuser gebaut, Bäche gegraben und Quellen angelegt. Früher war es etwas schwieriger. Da waren die Nächte so dunkel, das man unbedingt für lichtsorgen muste, oder warten. Und die Höhlen auch, aber da nützte warten nichts. Dann hat die fliegende Ameise Licht und Dunkelheit nicht mehr so streng getrennt, und nun sind die Nächte wunderbar. Aber inzwischen irgendwie langweilig.
+Bisher habe ich in einer wunderbaren Welt gelebt. Wunderbares Wetter, Kraft und Gesundheit. Intelektuelle Herausforderungen, die meinen Neigungen entsprechen (Daa! Saandkiste!!1!). Ich habe viele Häuser gebaut, Bäche gegraben und Quellen angelegt. Früher war es etwas schwieriger. Da waren die Nächte so dunkel, das man unbedingt für licht sorgen muste, oder warten. Und die Höhlen auch, aber da nützte warten nichts. Dann hat die fliegende Ameise Licht und Dunkelheit nicht mehr so streng getrennt, und nun sind die Nächte wunderbar. Aber inzwischen irgendwie langweilig.
 
 Dann kam der Regen. Manche sagen es war der Ameisenbär. War dem auch langweilig? Die Nächte sind immer noch erträglich. Wenn man gerne watet.  Überall wird es nass und glitschig. Mächige Nodegrosse Wassertropfen fallen vom Himmel und im Nu bilden sich grosse Pfützen. Und in denen rutscht man immer aus. Auf sechs Beinen kommt man natürlich überall hin. Nur das stehenbleiben.. Eine Ameise schwimmt ja vorzüglich. Auch wenn sie nicht will... Dauernd rutscht man weg und fängt sich einen Node später, gerade wenn man fast ein Stück Holz abgeknabbert hat. Wenn man neben einem Baum oder Felsen steht: Prinzip Regenrinne. Es gurgelt und man kriegt keine Luft mehr. Und rutscht weg. Dumm ist es wenn man in eine tiefe Pfütze fällt. Zwei Nodes tief und vergessen zu schwimmen, weil man sich gerade in der Realen Virtualität aufhält und Kaffee kocht? Tja, Pech :-(
 
@@ -18,7 +30,7 @@ Mit der Zeit fanden wir heraus, das uns die fliegende Ameise wohl doch nicht so 
 
 Ausserdem fanden wir den Dschungel. Dort regnet es am Tag und die Nächte sind angenehm. Aber die Erde mag das Wasser auch nicht und gleitet schnell davon. Sehr anstrengend mit all den Löchern. Aber wir lernen.
 
-Dann schuf der Ameisenbär den Freeminer und der nahm den Pflanzen die Kräfte. Überall totes Gras. Doch die Ameise schwächte dafür das Wasser. Aber das ist eine spätere Geschichte.
+Dann schuf der Ameisenbär den Freeminer und der nahm den Pflanzen die Kräfte. Überall totes Gras. Doch die fliegende Ameise schwächte dafür das Wasser. Aber das ist eine spätere Geschichte.
 
 *
 
@@ -27,7 +39,7 @@ Dann schuf der Ameisenbär den Freeminer und der nahm den Pflanzen die Kräfte. 
 An empty harmless world is boring. Building mobs was too difficult. And my dog always looks so worried when he hears the sounds of death in games. Moreover, this is a building game. And why do you build? Right, because otherwise you will get soaking wet. And then I had an idea :-)
 ** Eine leere harmlose Welt ist langweilig. Mobs bauen war mir zu schwierig. Und mein Hund schaut immer so besorgt wenn er das die Sterbetöne in Spielen hört. Ausserdem, dies ist ein Bauspiel. Und warum baut man? Richtig, weil sonst wird man pitschnass. Und dann hatte ich eine Idee :-)*
 
-If you set mine test water in the air, it might somehow falls down? Indeed, it did, after some persuasion. After I had it nicely tuned for finite liquid came version 4.10 and it no longer had it. Oh well.
+If you set mine test water in the air, it might somehow fall down? Indeed, it did, after some persuasion. After I had it nicely tuned for finite liquid came version 4.10 and it no longer had it. Oh well.
 ** Wenn man Minetest-wasser in die Luft setzt, fällt es vielleicht irgendwie runter? Tat es dann auch, nach etwas überreden. Nachdem ich es schön für endliche Flüssigkeit abgestimmt hatte, kam version 4.10, und die hatte es nicht mehr. Na gut.*
 
 Meanwhile, watergame can do the following: ** Mittlerweile kann Wasserspiel folgendes:*
@@ -55,10 +67,10 @@ Meanwhile, watergame can do the following: ** Mittlerweile kann Wasserspiel folg
 
 ###Warnings
 
-* no warranties. When you code, you know the quirks and avoid them /uncon?/unbewusst/. May break with other users/machines.
+* no warranties. When you code, you know the quirks and avoid them Unconscious. May break with other users/machines.
 * Only played single user.
 * Consumes more bandwith because of more changing nodes.
-* No /?/rechte/, anyone can change rain and gamemode.
+* No privs, anyone can change rain and gamemode.
 
 ### Installation
 
@@ -95,10 +107,10 @@ Currently through chat. Commands begin with /ws/ for /wasserspiel/ .
 
 ##Three sorts of water...
 
-There are three sorts of water in minetest/freeminer. Which are choosen globally for all maps, so when i /?/einen schönen see gestaut hast/ and switched to infinite liquid for another map and played this one again, water would go away :-(
+There are three sorts of water in minetest/freeminer. Which are choosen globally for all maps, so when i dammed a beautiful lake and switched to infinite liquid for another map and played this one again, water would go away :-(
 
 * minetest 4.10 has infinite liquid, which multiplies while going down, but goes quick away. 
-* 4.9 had an early try of realistic finity, which somehow got removed.  Sadly gone. With wasserspiel-rain land got quickly flooded, so i wrote evaporation. After some balance land flooded 2 nodes high which got away in the morning. /?/Ausser wenn es gestaut wurde/.
+* 4.9 had an early try of realistic finity, which somehow got removed.  Sadly. With wasserspiel-rain land got quickly flooded, so i wrote evaporation. After some balance land flooded 2 nodes high which got away in the morning. Except when it was dammed.
 * freeminer tries relistic liquid. The 4.9-finite code works, but somehow produces much less water.
 
 
