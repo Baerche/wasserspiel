@@ -2,7 +2,7 @@
 #*En:* water game
 
 #Links
-Downloads: <https://github.com/Baerche/wasserspiel/wiki>
+*En:* Experimental Download: <https://github.com/Baerche/wasserspiel/wiki>
 
 ##*De: Wozu?*
 ##*En:* What for?
@@ -22,9 +22,9 @@ If you set mine test water in the air, it might somehow falls down? Indeed, it d
 *En:* Meanwhile, watergame can do the following:
 
 ---
-*De: Regentropfen fallenlassen und aufplatschen und Pfützen bilden. Na gut, die Wassertropfen sind halb so gross wie man selbst, deswegen empfehle ich als Ameise zu spielen. Also nicht F7 drücken, sonst ist die Illusion weg.*
+*De: Regentropfen fallenlassen und aufplatschen und Pfützen bilden. Na gut, die Wassertropfen sind halb so gross wie man selbst, deswegen empfehle ich als Ameise zu spielen. Also nicht F7 drücken, sonst ist die Illusion weg :-) *
 
-*En:* Drop raindrops and splashing and form puddles. Well, the water droplets are half as large as oneself, that's why I recommend to play as ant. So do not press F7, otherwise the illusion is gone.
+*En:* Drop raindrops and splashing and form puddles. Well, the water droplets are half as large as oneself, that's why I recommend to play as ant. So do not press F7, otherwise the illusion is gone :-)
 
 ---
 *De: Ausrutschen. Das ist richtig cool und macht wahnsinnig. Wenn man in einer Pfütze steht rutscht man alle paar Sekunden auf das nächste Feld. Und verliert den Focus, gerade wenn man noch einen Moment länger hacken muss. Also sorgt man besser für ein Dach oder eine rutschfeste Unterlage, oder geht nachts ins Bett :-) *
@@ -32,12 +32,12 @@ If you set mine test water in the air, it might somehow falls down? Indeed, it d
 *En:* Slipping. This is really cool and drives mad. When you are standing in a puddle you slip every few seconds to the next field. And lose the focus, just when you still have to hack a bit longer. So better provide for a roof or a non-slip base, or go to bed at night :-)
 
 ---
-*De: Wechselnden Regen. Der orientiert sich nicht an der Uhrzeit, sondern am Licht. Mehr Dunkelheit, mehr nass. Ich hatte gehofft das das Dämmern durch Wolken auch mehr Regen erzeugt, aber leider nicht. Dafür regnet es kräftig in grossen Höhlen.*
+*De: Wechselnden Regen. Der orientiert sich nicht an der Uhrzeit, sondern am Licht. Mehr Dunkelheit, mehr nass. Ich hatte gehofft das das Dämmern durch Wolken auch mehr Regen erzeugt, aber leider nicht. Dafür regnet es kräftig in grossen Höhlen. :-) *
 
 *En:* Changing rain. It is not oriented at the position, but based on light. More darkness, more wet. I had hoped that the dawning through clouds produced more rain, but unfortunately not. Instead, it is raining heavily in large caves.
 
 ---
-*De: Ertrinken. Na gut, das ist nicht von mir. Aber ganz praktisch wenn man in eine 2 Blocks hohe Grube rutscht oder direkt neben einem Baum einschläft.*
+*De: Ertrinken. Na gut, das ist nicht von mir. Aber ganz praktisch wenn man in eine 2 Blocks hohe Grube rutscht oder direkt neben einem Baum einschläft. :-) *
 
 *En:* Drowning. Well, that's not mine. But handy with slipping when you slip into a 2 blocks high pit or fall asleep next to a tree.
 
@@ -52,5 +52,37 @@ If you set mine test water in the air, it might somehow falls down? Indeed, it d
 *En:* Erosion. Something like that. In the vicinity of water earth slips sometimes to the side or down. Or in the channel's you just had dug. Sand and so does too.
 
 ---
+
+## Manual
+### Installation
+
+Either you know know how to do it with github, or you go to <https://github.com/Baerche/wasserspiel/wiki> and download the zip. That does not include the nasty "-master" in the name. just put it in mods folder. (Once tried to upload to the library but it did not like me)
+
+###Configuration
+Currently through chat. Commands begin with /ws/ for /wasserspiel/ . 
+
+* /ws/info: Shows internal info.
+
+
+* /ws/rain <number>: chooses rain volume. default -1. 
+
+ * 1: strongest, bigger is weaker. 
+ * 0: off. 
+ * -1: automatic, more when dark.
+  
+* /ws/version: Choose a version by number, then restart. Allows to switch to experimental versions for the current map. Currently:
+
+ * dev: I experiment here. More debugging info,quick fixes, big rewrites, depends. May crash.
+ * default: Used for hours of play in dev before updating.
+ * jungle: Harder, more fun. It now rains heavily when bright, with cozy nights to relax. And erosion is much faster, do not mine in dirt :-)
+ * kristalltuerme (kristall towers). Oder version before i mastered objects. Looks like skyscrapers popping up. May no longer be compatible.
+
+##Three sorts of water...
+
+There are three sorts of water in minetest/freeminer. Which are choosen globally for all maps, so when i /?/einen schönen see gestaut hast/ and switched to infinite liquid for another map and played this one again, water would go away :-(
+
+* minetest 4.10 has infinite liquid, which multiplies while going down, but goes quick away. 
+* 4.9 had an early try of realistic finity, which somehow got removed.  Sadly gone. With wasserspiel-rain land got quickly flooded, so i wrote evaporation. After some balance land flooded 2 nodes high which got away in the morning. /?/Ausser wenn es gestaut wurde/.
+* freeminer tries relistic liquid. The 4.9-finite code works, but somehow produces much less water.
 
 ---
