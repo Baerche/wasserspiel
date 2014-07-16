@@ -336,20 +336,21 @@ minetest.register_entity(m .. "tropfen", {
 })
 
 -- engine-limit
-local function objekt_platz_voll(active_object_count)
-	return active_object_count >= 20
+local function is_objekt_platz_voll(pos, active_object_count, active_object_count_wider)
+	return active_object_count_wider > 10
+	--return active_object_count >= 5
 end
 
 
 local function neues_cloudlet(pos, node, active_object_count, active_object_count_wider)
 	--log_cnt "versuche"
 	--log_stat ("drumrum",active_object_count)
-	if objekt_platz_voll(active_object_count) then return end 
 	-- -1 macht regenstärke lichtabhängig, 1.. ist immer an per zufall, 0 aus
 	if regen == 0 or regen > 1 and math.random(regen) > 1 then return end
 	-- nicht in wüste
 	if string.match(node.name, ":desert_") then return end
 	pos.y = pos.y + 20
+	if is_objekt_platz_voll(pos, active_object_count, active_object_count_wider) then return end 
 	local r = 1
 	if regen < 0 then
 		local l = licht_wert(pos, 16) -- 2 .. 17
@@ -368,8 +369,6 @@ minetest.register_abm({
 	neighbors = {"air"},
 	interval = 3,
 	chance = liqfin and 4 or 1000,
-	--interval = 1,
-	--chance = liqfin and 100 or 1000,
 	action = neues_cloudlet,
 })
 
@@ -377,7 +376,7 @@ minetest.register_abm({
 -- extras
 --
 local function tropfen(pos, node, active_object_count, active_object_count_wider)
-	if objekt_platz_voll(active_object_count) then return end
+	if is_objekt_platz_voll(pos, active_object_count, active_object_count_wider) then return end
 	pos.y = pos.y - 1
 	if minetest.get_node(pos).name == "air" then
 		minetest.add_entity(pos, m .. "tropfen")
@@ -520,7 +519,7 @@ if true then
 			local pos = beinpos(player)
 			if true -- math.random(5) == 1
 			and	minetest.get_item_group(minetest.get_node(pos).name, "water") > 0 then
-				if minetest.get_node(pos).name == "default:water_source" then log_cnt "schwimm" end
+				if n == "default:water_source" then log_cnt "schwimm" end
 				landlose_watersources_loeschen(pos,player)
 			end
 		end
@@ -618,8 +617,10 @@ local function print_log(s)
 	end
 end
 
+local steps = -1
 
 local function step()
+	steps = steps + 1
 	info.tm = (minetest.get_timeofday() or 0) * 24
 	
 	if dbg then
