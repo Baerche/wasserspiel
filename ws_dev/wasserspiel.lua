@@ -400,9 +400,10 @@ local function erosion (pos, node)
 		pos.y = pos.y + 1
 		local n = minetest.get_node(pos).name
 		pos.y = pos.y - 1
-		if minetest.get_item_group(n, "flora") == 0 then
+		if minetest.get_item_group(n, "flora") == 0 
+		and not minetest.find_node_near(pos, 2, {"group:tree"}) then
 			--log_cnt "eroding"
-			-- TODO meta-inf und so fehlt.
+			-- TODO meta-inf und so fehlt, wie geht das?.
 			local o = minetest.get_node(p)
 			minetest.set_node(p, minetest.get_node(pos))
 			minetest.set_node(pos, o)
