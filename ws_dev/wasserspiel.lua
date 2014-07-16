@@ -304,7 +304,7 @@ minetest.register_entity(m .. "tropfen", {
 		local vorschau = .52
 		p.y = p.y - vorschau
 		if minetest.get_node(p).name ~= "air" and minetest.get_item_group(minetest.get_node(p).name, "water") == 0 then
-			log_cnt "platsch"
+			--log_cnt "platsch"
 			--local s = "Splash" --mit ambience
 			local s = "tnt_ignite"
 			minetest.sound_play(s, {pos = pos, gain = 0.3})
@@ -342,7 +342,7 @@ end
 
 
 local function neues_cloudlet(pos, node, active_object_count, active_object_count_wider)
-	log_cnt "versuche"
+	--log_cnt "versuche"
 	--log_stat ("drumrum",active_object_count)
 	if objekt_platz_voll(active_object_count) then return end 
 	-- -1 macht regenstärke lichtabhängig, 1.. ist immer an per zufall, 0 aus
@@ -353,13 +353,13 @@ local function neues_cloudlet(pos, node, active_object_count, active_object_coun
 	local r = 1
 	if regen < 0 then
 		local l = licht_wert(pos, 16) -- 2 .. 17
-		log_stat ("licht",l)
+		--log_stat ("licht",l)
 		l = 16 - l
 		local r = l <= 1 and 1 or math.random( 1,l )
 		if r > 1 then return end
 	end
 	if minetest.get_node(pos).name ~= "air" then return end
-	log_cnt "neue"
+	--log_cnt "neue"
 	minetest.add_entity(pos, m .. "tropfen")
 end
 
@@ -393,7 +393,7 @@ minetest.register_abm({
 })
 
 local function erosion (pos, node)
-	log_cnt "eroding?"
+	--log_cnt "eroding?"
 	p.x = pos.x + math.random(-1,1)
 	p.y = pos.y + math.random(-1,0)
 	p.z = pos.z + math.random(-1,1)
@@ -402,7 +402,7 @@ local function erosion (pos, node)
 		local n = minetest.get_node(pos).name
 		pos.y = pos.y - 1
 		if minetest.get_item_group(n, "flora") == 0 then
-			log_cnt "eroding"
+			--log_cnt "eroding"
 			-- TODO meta-inf und so fehlt.
 			local o = minetest.get_node(p)
 			minetest.set_node(p, minetest.get_node(pos))
@@ -466,7 +466,7 @@ end
 
 --workaround: manchmal sammeln sich watersources nebeneinander, obwohl ich beim setzen die umgebung checke.
 --lösch das
-local function landlose_watersources_loeschen(pos)
+local function landlose_watersources_loeschen(pos, player)
 	--log_cnt "loeschversuch"
 	local p = {y = pos.y}
 	local kontakt = false
@@ -481,11 +481,10 @@ local function landlose_watersources_loeschen(pos)
 				p.z = pos.z + z
 				if x ~= 0 or z ~= 0 then
 					local n = minetest.get_node(p).name
-					local is_wasser = minetest.get_item_group(n, "water") > 0
-					if is_wasser then
+					if n == "default:water_source" then
 						fand_wasser = true
 					end
-					if n ~= "air" and not is_wasser then
+					if n ~= "air" and minetest.get_item_group(n, "water") == 0 then
 						kontakt = true
 						break
 					end
@@ -497,7 +496,7 @@ local function landlose_watersources_loeschen(pos)
 		end
 	end
 	if kontakt or dist_wasserhaltig == max_dist - 1 then
-		--log_stat ("landkontakt", dist_wasserhaltig)
+		if player then log_stat ("landkontakt", dist_wasserhaltig) end
 		return
 	end
 	log_stat ("landlos", dist_wasserhaltig)
@@ -521,8 +520,8 @@ if true then
 			local pos = beinpos(player)
 			if true -- math.random(5) == 1
 			and	minetest.get_item_group(minetest.get_node(pos).name, "water") > 0 then
-				log_cnt "schwimm"
-				landlose_watersources_loeschen(pos)
+				if minetest.get_node(pos).name == "default:water_source" then log_cnt "schwimm" end
+				landlose_watersources_loeschen(pos,player)
 			end
 		end
 		minetest.after(3, schwimmwassertest)
@@ -536,7 +535,7 @@ minetest.register_abm({
 	neighbors = {"air", "group:water"},
 	interval = 1,
 	chance = 600,
-	action = landlose_watersources_loeschen,
+	action = function(pos) landlose_watersources_loeschen(pos) end
 })
 end
 

@@ -3,6 +3,7 @@ REPO=https://github.com/Baerche/wasserspiel.git
 
 WELT=410welt
 WELT=modprobe
+WELT=dschungel
 
 NAME=inspektor
 NAME=debugger
@@ -18,7 +19,7 @@ BIN=~/minetest-4.10-git/bin/minetest; MAP_WORLDS=$HOME/.minetest/worlds
 
 CMD="$BIN"
 
-CMD="$BIN --config ../user/$ME/minetest.conf --name $NAME --password pass --worldname $WELT --go"
-
 CMD="$BIN --config ../user/$ME/minetest.conf"
+
+CMD="$BIN --config ../user/$ME/minetest.conf --name $NAME --password pass --worldname $WELT --go"
 
