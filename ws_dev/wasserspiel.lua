@@ -594,9 +594,10 @@ local function gib_fehlendes(player, liste)
 end
 
 local standard_inventory = {
-	"default:torch 4", "default:ladder 4",
-	"default:pick_stone", m .. "cloudlet",
-	"default:apple 4", "default:pick_wood"
+	"default:chest", "default:ladder 4",
+	"default:torch 4", 
+	"default:pick_stone",
+	"default:apple 4", "default:pick_wood", m .. "cloudlet",
 }
 
 local function hello(player)

@@ -1,8 +1,8 @@
 ME=$(git config --get user.name)
 REPO=https://github.com/Baerche/wasserspiel.git
 
+WELT=17jul1710
 WELT=syntaxtest
-WELT=17jul1530
 
 NAME=inspektor
 NAME=debugger
@@ -21,4 +21,5 @@ CMD="$BIN"
 CMD="$BIN --config ../user/$ME/minetest.conf"
 
 CMD="$BIN --config ../user/$ME/minetest.conf --name $NAME --password pass --worldname $WELT --go"
+
 
