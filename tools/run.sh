@@ -14,5 +14,4 @@ cd screenshots
 pwd
 echo $CMD
 IFS=$OIFS #hmm
-$CMD
-$CLEANUP
+($CMD; $CLEANUP)&

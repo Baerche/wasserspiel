@@ -5,6 +5,13 @@ fullscreen = true
 enable_shaders = true
 #
 
+#dschungel
+mg_name = v6
+mgv6_spflags = jungles, biomeblend, mudflow
+mg_flags = trees, caves, dungeons, noflat, light
+#
+
+
 #bei 1280x1024 console sichtbar lassen
 screenW = 1200
 screenH = 850
