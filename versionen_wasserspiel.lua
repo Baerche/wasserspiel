@@ -1,5 +1,7 @@
 wasserspiel = {}
 
+local verfuegbare_versionen = {"dev", "default", "jungle", "kristalltuerme"}
+
 local config_file = minetest.get_worldpath() .. "/wasserspiel.txt"
 local saved_config = {}
 
@@ -22,11 +24,16 @@ end
 load()
 if not saved_config.zuletzt_benutzt then
 	saved_config.zuletzt_benutzt = "default"
+	local n = minetest.setting_get("wasserspiel_new_world_version")
+	for _,v in ipairs(verfuegbare_versionen) do
+		if v == n then
+			saved_config.zuletzt_benutzt = v
+		end
+	end
 	save()
 end
 local aktiv = saved_config.zuletzt_benutzt
 
-local verfuegbare_versionen = {"dev", "default", "jungle", "kristalltuerme"}
 local function choose_version(name, param)
 	if string.match(param, "%d") then
 		local n = verfuegbare_versionen[tonumber(param)]
@@ -34,6 +41,7 @@ local function choose_version(name, param)
 			minetest.chat_send_player(name, "Stelle um auf " .. n
 				.. " --- Danach Neustart noetig ---")
 			saved_config.zuletzt_benutzt = n
+			minetest.setting_set("wasserspiel_new_world_version", n)
 			save()
 		end		
 	else
