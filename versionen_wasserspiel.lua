@@ -34,15 +34,19 @@ if not saved_config.zuletzt_benutzt then
 end
 local aktiv = saved_config.zuletzt_benutzt
 
-local function choose_version(name, param)
+local function choose_version(name, param, global)
 	if string.match(param, "%d") then
 		local n = verfuegbare_versionen[tonumber(param)]
 		if n then
-			minetest.chat_send_player(name, "Stelle um auf " .. n
-				.. " --- Danach Neustart noetig ---")
-			saved_config.zuletzt_benutzt = n
-			minetest.setting_set("wasserspiel_new_world_version", n)
-			save()
+			if not global then
+				minetest.chat_send_player(name, "Stelle um auf Wasserpiel/" .. n
+					.. " --- Danach Neustart noetig ---")
+				saved_config.zuletzt_benutzt = n
+				save()
+			else
+				minetest.chat_send_player(name, "Neue Maps benutzen nun Wasserpiel/" .. n)
+				minetest.setting_set("wasserspiel_new_world_version", n)
+			end
 		end		
 	else
 		minetest.chat_send_player(name, dump({
@@ -50,19 +54,32 @@ local function choose_version(name, param)
 			nach_neustart = saved_config.zuletzt_benutzt,
 			verfuegbare_versionen
 		}))
-		minetest.chat_send_player(name, "Hier laeuft Wasserpiel/" .. aktiv)
-		minetest.chat_send_player(name, "Bitte die Nummer der Version eingeben")
+		if not global then
+			minetest.chat_send_player(name, "Hier laeuft Wasserpiel/" .. aktiv)
+		else
+			minetest.chat_send_player(name, "Bei neuen Spielen läuft Wasserpiel/" 
+				.. (minetest.setting_get("wasserspiel_new_world_version") or "default"))
+		end
+		minetest.chat_send_player(name, "Bitte die Nummer der Version beim kommando eingeben")
 	end
 end
 
 local choose_version_desc = {
-	func = choose_version, 
+	func = function(name, param) choose_version(name, param) end, 
 	description = "Wasserspiel Version setzen. Nach setzen muss neu gestarted werden.",
 	params = "version-id",	
 }
 
+local choose_global_version_desc = {
+	func = function(name, param) choose_version(name, param, true) end, 
+	description = "Wasserspiel Version *fuer neues Spiel* setzen. Gilt für neu erstellte maps.",
+	params = "version-id",	
+}
 minetest.register_chatcommand("ws/v", choose_version_desc)
 minetest.register_chatcommand("ws/version", choose_version_desc)
+
+minetest.register_chatcommand("ws/gv", choose_global_version_desc)
+minetest.register_chatcommand("ws/global-version", choose_global_version_desc)
 
 minetest.register_on_joinplayer(function(player)
 	local n = player:get_player_name()
