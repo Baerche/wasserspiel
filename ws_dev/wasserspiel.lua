@@ -412,16 +412,32 @@ local function erosion (pos, node)
 	end
 end
 
+local function sinken (pos, node)
+	log_cnt "sinkend?"
+	pos.y = pos.y - 1
+	if minetest.get_item_group(minetest.get_node(pos).name, "water") > 0 then
+		log_cnt "sinkend"
+		minetest.set_node(pos, node)
+		pos.y = pos.y + 1
+		minetest.set_node(pos, {name = "air"})
+	end
+end
+
+
 if true or not is_freeminer then -- hat eigene
 	minetest.register_abm({
 		nodenames =  {"group:crumbly"},
 		neighbors = {"default:water_flowing"},
 		interval = liqfin and 1 or 1,
 		chance = liqfin and 1 or 1,
-		--chance = liqfin and 1 or 1000,
-		--interval = 1,
-		--chance = 1000,
 		action = erosion,
+	})
+	minetest.register_abm({
+		nodenames =  {"group:crumbly"},
+		neighbors = {"group:water"},
+		interval = 1,
+		chance = 60,
+		action = sinken,
 	})
 end
 
@@ -580,7 +596,7 @@ end
 local standard_inventory = {
 	"default:torch 4", "default:ladder 4",
 	"default:pick_stone", m .. "cloudlet",
-	"default:apple 4",
+	"default:apple 4", "default:pick_wood"
 }
 
 local function hello(player)
@@ -622,7 +638,6 @@ end
 local steps = -1
 
 local function step()
-	if true then return end 
 	steps = steps + 1
 	info.tm = (minetest.get_timeofday() or 0) * 24
 	
