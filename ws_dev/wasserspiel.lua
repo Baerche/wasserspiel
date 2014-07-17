@@ -399,9 +399,10 @@ local function erosion (pos, node)
 	if "default:water_flowing" == minetest.get_node(p).name then
 		pos.y = pos.y + 1
 		local n = minetest.get_node(pos).name
+		local tree = minetest.find_node_near(pos, 2, {"group:tree"}) 
 		pos.y = pos.y - 1
 		if minetest.get_item_group(n, "flora") == 0 
-		and not minetest.find_node_near(pos, 2, {"group:tree"}) then
+		and not tree then
 			--log_cnt "eroding"
 			-- TODO meta-inf und so fehlt, wie geht das?.
 			local o = minetest.get_node(p)
@@ -621,6 +622,7 @@ end
 local steps = -1
 
 local function step()
+	if true then return end 
 	steps = steps + 1
 	info.tm = (minetest.get_timeofday() or 0) * 24
 	
